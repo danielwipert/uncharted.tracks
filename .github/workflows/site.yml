@@ -1,0 +1,55 @@
+# Builds the site on every push to main.
+# Publishing to GitHub Pages is switched off until launch:
+# it only runs once the repo variable SITE_LIVE is set to "true"
+# (Settings → Secrets and variables → Actions → Variables) and
+# Pages is set to "GitHub Actions" (Settings → Pages).
+
+name: Build site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: pip install -r requirements.txt
+
+      - name: Build the site
+        run: python build.py
+
+      - name: Package the site for Pages
+        if: vars.SITE_LIVE == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publish:
+    needs: build
+    if: vars.SITE_LIVE == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

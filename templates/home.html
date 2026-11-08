@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{# Placeholder home page: the collage wall gets built in step 5. #}
+{% block content %}
+<main class="placeholder">
+  <p class="label">THE {{ site.year }} ISSUE · {{ site.author | upper }}</p>
+  <h1 class="masthead">TOP 50</h1>
+  <p class="note">{{ site.editors_note }}</p>
+  <ol class="simple-list">
+    {% for song in songs %}
+    <li><a href="{{ song.url }}"><span class="rank">{{ song.rank }}</span> {{ song.title }} <span class="artist">— {{ song.artist }}</span></a></li>
+    {% endfor %}
+  </ol>
+</main>
+{% endblock %}

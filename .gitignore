@@ -1,0 +1,12 @@
+# Built site (GitHub builds it fresh on every push)
+_site/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS clutter
+.DS_Store
+Thumbs.db

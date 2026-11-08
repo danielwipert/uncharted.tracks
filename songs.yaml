@@ -1,0 +1,77 @@
+# Top 50 of 2026 — all the content for the site lives in this file.
+#
+# How to edit:
+#   - Each song starts with "- rank:".
+#   - Text in [square brackets] is a placeholder waiting for your writing.
+#   - For the essay, write normal paragraphs under "essay: |".
+#     Leave a blank line between paragraphs. Keep the two-space indent.
+#   - "photo" is optional. Leave it out and the site shows a red dotted placeholder.
+
+site:
+  year: 2026
+  list_size: 50
+  title: "Top 50 of 2026"
+  author: "Dan Wipert"
+  editors_note: "[Two or three short lines about this year's list: what it is, how you picked them, and how to use the page.]"
+
+songs:
+  # NOTE: the ranks below are stand-ins for testing the design.
+
+  - rank: 50
+    slug: something-else
+    title: "Something Else"
+    artist: "Joshua Burnside"
+    hometown: "Belfast, N. Ireland"
+    record_label: "Nettwerk"
+    release_month: "January"
+    genre_scene: "[GENRE / SCENE]"
+    photo: "img/photos/joshua-burnside.jpg"
+    photo_alt: "Joshua Burnside seated in an empty concert hall beside a guitar"
+    photo_credit: "Photo: courtesy of Nettwerk"
+    headline: "[Your headline goes here, big and loud]"
+    standfirst: "[One-sentence standfirst: the hook that makes someone want to read on.]"
+    pull_quote: "[Pull quote — one line of your own writing]"
+    essay: |
+      [Opening paragraph: where you were when this song found you, and the first thing that grabbed you about it.]
+
+      [Second paragraph: what the song is doing — the sound, the build, the moment it turns.]
+
+      [Third paragraph: why it earned its spot this year, and who should hear it.]
+    spotify_url: ""
+    apple_music_url: ""
+
+  - rank: 49
+    slug: half-time
+    title: "Half Time"
+    artist: "Armlock"
+    hometown: "Melbourne, Australia"
+    record_label: "Run For Cover"
+    release_month: "September"
+    genre_scene: "[GENRE / SCENE]"
+    headline: "[Your headline goes here, big and loud]"
+    standfirst: "[One-sentence standfirst.]"
+    pull_quote: "[Pull quote]"
+    essay: |
+      [Opening paragraph.]
+
+      [Second paragraph.]
+    spotify_url: ""
+    apple_music_url: ""
+
+  - rank: 48
+    slug: big-feelings
+    title: "Big Feelings"
+    artist: "Mim Jensen"
+    hometown: "Christchurch, NZ"
+    record_label: "[Record label]"
+    release_month: "[Month]"
+    genre_scene: "[GENRE / SCENE]"
+    headline: "[Your headline goes here, big and loud]"
+    standfirst: "[One-sentence standfirst.]"
+    pull_quote: "[Pull quote]"
+    essay: |
+      [Opening paragraph.]
+
+      [Second paragraph.]
+    spotify_url: ""
+    apple_music_url: ""

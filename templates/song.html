@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{# Placeholder song page: the full magazine profile gets built in step 4. #}
+{% block title %}{{ song.title }} — {{ song.artist }} · {{ site.title }}{% endblock %}
+{% block content %}
+<main class="placeholder">
+  <p class="label"><a href="{{ root }}">TOP 50 ’{{ (site.year | string)[-2:] }}</a> · NO. {{ song.rank }} / {{ total }}</p>
+  <h1 class="headline">{{ song.headline }}</h1>
+  <p class="song-card"><em>“{{ song.title }}”</em> — {{ song.artist }}</p>
+  <p class="label">FILE UNDER: {{ song.hometown }} · {{ song.record_label }} · Released {{ song.release_month }} {{ site.year }}</p>
+  {% for paragraph in song.paragraphs %}
+  <p>{{ paragraph }}</p>
+  {% endfor %}
+  <nav class="label">
+    {% if song.prev %}<a href="{{ root }}{{ song.prev.url }}">← No. {{ song.prev.rank }}</a>{% endif %}
+    · <a href="{{ root }}">All 50</a> ·
+    {% if song.next %}<a href="{{ root }}{{ song.next.url }}">No. {{ song.next.rank }} →</a>{% endif %}
+  </nav>
+</main>
+{% endblock %}
