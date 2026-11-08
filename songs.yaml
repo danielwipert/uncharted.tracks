@@ -40,8 +40,14 @@ songs:
       [Second paragraph: what the song is doing — the sound, the build, the moment it turns.]
 
       [Third paragraph: why it earned its spot this year, and who should hear it.]
-    spotify_url: ""
-    apple_music_url: ""
+    duration: "3:00"
+    # Where to hear it. Leave any of these out and that row just won't show.
+    bandcamp_url: "https://joshuaburnside.bandcamp.com/track/something-else"
+    bandcamp_track_id: "1776485615"   # from the Bandcamp page's Share/Embed code; lets it play on the page
+    spotify_url: "https://open.spotify.com/track/1lkQ8iHP3XCcMX34D8Bb5M"
+    apple_music_url: "https://music.apple.com/us/album/something-else-single/1859041669?i=1859041670"
+    youtube_url: "https://www.youtube.com/watch?v=P5AS8OttXS4"
+    youtube_music_url: "https://music.youtube.com/browse/MPREb_QdVskPU39nI"
 
   - rank: 49
     slug: half-time

@@ -85,14 +85,26 @@ img { display: block; max-width: 100%; }
 .file-list dt { font-weight: 700; letter-spacing: 0.06em; }
 .file-list dd { margin: 0; }
 
-.listen { margin-top: 32px; }
-.listen-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.listen-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; font-family: var(--font-mono); font-size: 13px; font-weight: 700; cursor: pointer; border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--spot); }
-.listen-btn.dark { background: var(--ink); color: var(--paper); }
-.listen-btn.light { background: var(--paper); color: var(--ink); }
-.listen-btn[aria-pressed="true"] { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--spot); }
-.player { margin-top: 16px; }
-.player iframe { width: 100%; border: 0; border-radius: 12px; display: block; }
+.listen { margin-top: 40px; }
+.jcard { position: relative; background: #FFFDF6; border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-1deg); }
+.tape-jcard { top: -10px; left: -16px; width: 80px; height: 22px; transform: rotate(-35deg); z-index: 1; }
+.jcard-head { display: flex; justify-content: space-between; align-items: center; background: var(--ink); color: var(--paper); padding: 8px 12px; }
+.jcard-head h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 20px; line-height: 1; letter-spacing: 0.01em; }
+.jcard-head .mono { font-size: 11px; }
+.jcard-rows { list-style: none; margin: 0; padding: 0; }
+.jcard-row { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 12px; border-top: 1px dashed #8F877A; text-decoration: none; color: var(--ink); transition: background 0.15s ease; }
+.jcard-rows li:first-child .jcard-row { border-top: none; }
+.jcard-row:hover, .jcard-row:focus-visible { background: rgba(255, 90, 54, 0.12); }
+.jcard-row.is-highlight { background: var(--spot); }
+.jcard-row.is-playing { box-shadow: inset 6px 0 0 var(--ink); }
+.jcard-code { width: 24px; flex-shrink: 0; }
+.jcard-name { flex-grow: 1; font-family: var(--font-marker); font-size: 20px; line-height: 1.1; }
+.jcard-note { font-size: 11px; }
+.jcard-row.is-highlight .jcard-note { color: var(--ink); }
+.bandcamp-note { margin: 18px 0 0; font-family: var(--font-marker); font-size: 17px; line-height: 1.3; transform: rotate(-1deg); }
+.player { margin-top: 18px; }
+.player iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #E4DDCF; }
+.player iframe.is-video { aspect-ratio: 16 / 9; height: auto; border-radius: 0; }
 
 .essay { padding-top: 40px; font-size: 18px; line-height: 1.6; }
 .essay p { margin: 0 0 18px; }

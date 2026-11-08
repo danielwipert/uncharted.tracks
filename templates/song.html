@@ -74,20 +74,29 @@
       </dl>
     </section>
 
-    {% if song.spotify_embed or song.apple_embed %}
-    <section class="listen" id="listen">
-      <div class="listen-buttons">
-        {% if song.spotify_embed %}
-        <button class="listen-btn dark" type="button" data-embed="{{ song.spotify_embed }}" data-service="Spotify" data-height="152">
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg> SPOTIFY
-        </button>
-        {% endif %}
-        {% if song.apple_embed %}
-        <button class="listen-btn light" type="button" data-embed="{{ song.apple_embed }}" data-service="Apple Music" data-height="175">
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg> APPLE MUSIC
-        </button>
-        {% endif %}
+    {% if song.listen %}
+    <section class="listen" id="listen" aria-labelledby="listen-heading">
+      <div class="jcard">
+        <span class="tape tape-jcard" aria-hidden="true"></span>
+        <div class="jcard-head">
+          <h2 id="listen-heading">WHERE TO HEAR IT</h2>
+          <span class="mono">SIDE A{% if song.duration %} · {{ song.duration }}{% endif %}</span>
+        </div>
+        <ul class="jcard-rows">
+          {% for row in song.listen %}
+          <li>
+            <a class="jcard-row{% if row.highlight %} is-highlight{% endif %}" href="{{ row.url }}" target="_blank" rel="noopener"
+               {% if row.embed %}data-embed="{{ row.embed }}" data-height="{{ row.height }}"{% endif %} data-service="{{ row.name }}">
+              <span class="mono strong jcard-code">{{ row.code }}</span>
+              <span class="jcard-name">{{ row.name }}</span>
+              {% if row.note %}<span class="mono soft jcard-note">{{ row.note }}</span>{% endif %}
+              <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true">{% if row.embed %}<path d="M6 4v14l12-7z"/>{% else %}<path d="M4 11h13M12 5l6 6-6 6"/>{% endif %}</svg>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
+      {% if song.bandcamp_url %}<p class="bandcamp-note">Like it? Buy it on Bandcamp — that’s the one that pays the artist.</p>{% endif %}
       <div class="player" hidden></div>
     </section>
     {% endif %}
@@ -150,23 +159,26 @@
 </div>
 
 <script>
-  // Players load only when tapped (keeps the page fast).
-  document.querySelectorAll('.listen-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
+  // Tapping a row that has a player opens it right here on the page.
+  // Rows without a player (like YouTube Music) just open the service.
+  document.querySelectorAll('.jcard-row[data-embed]').forEach(function (row) {
+    row.addEventListener('click', function (event) {
+      event.preventDefault();
       var box = document.querySelector('.player');
       box.innerHTML = '';
       var frame = document.createElement('iframe');
-      frame.src = btn.dataset.embed;
-      frame.height = btn.dataset.height;
-      frame.title = btn.dataset.service + ' player';
+      frame.src = row.dataset.embed;
+      frame.title = row.dataset.service + ' player';
       frame.allow = 'autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture';
-      frame.loading = 'lazy';
+      frame.setAttribute('allowfullscreen', '');
+      if (row.dataset.height === '0') { frame.className = 'is-video'; } else { frame.height = row.dataset.height; }
       box.appendChild(frame);
       box.hidden = false;
+      document.querySelectorAll('.jcard-row').forEach(function (r) { r.classList.toggle('is-playing', r === row); });
       var strip = document.querySelector('.now-playing');
-      strip.querySelector('.np-service').textContent = 'PLAYER OPEN · ' + btn.dataset.service.toUpperCase();
+      strip.querySelector('.np-service').textContent = 'PLAYER OPEN · ' + row.dataset.service.toUpperCase();
       strip.hidden = false;
-      document.querySelectorAll('.listen-btn').forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
   });
 </script>

@@ -75,6 +75,38 @@ def apple_embed(url):
     return ""
 
 
+def youtube_embed(url):
+    """Turn a normal YouTube link into its player link."""
+    m = re.search(r"(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})", url or "")
+    return f"https://www.youtube-nocookie.com/embed/{m.group(1)}" if m else ""
+
+
+def bandcamp_embed(track_id):
+    """Bandcamp's player needs the track's number (from its Share/Embed code)."""
+    if not track_id:
+        return ""
+    return (f"https://bandcamp.com/EmbeddedPlayer/track={track_id}/size=large/"
+            "bgcol=f2ede3/linkcol=ff5a36/tracklist=false/artwork=small/transparent=true/")
+
+
+def listen_rows(song):
+    """The rows of the cassette insert, in order. Services without a link are skipped.
+    'embed' = plays on the page when tapped; no embed = opens the service instead."""
+    services = [
+        ("Bandcamp", song.get("bandcamp_url"), bandcamp_embed(song.get("bandcamp_track_id")), 120, "buy it", True),
+        ("Spotify", song.get("spotify_url"), spotify_embed(song.get("spotify_url")), 152, "", False),
+        ("Apple Music", song.get("apple_music_url"), apple_embed(song.get("apple_music_url")), 175, "", False),
+        ("YouTube", song.get("youtube_url"), youtube_embed(song.get("youtube_url")), 0, "video", False),
+        ("YouTube Music", song.get("youtube_music_url"), "", 0, "opens app", False),
+    ]
+    rows = []
+    for name, url, embed, height, note, highlight in services:
+        if url:
+            rows.append({"code": f"A{len(rows) + 1}", "name": name, "url": url, "embed": embed,
+                         "height": height, "note": note, "highlight": highlight})
+    return rows
+
+
 def add_extras(songs):
     """Add the things templates need that aren't typed in by hand."""
     for i, song in enumerate(songs):
@@ -87,8 +119,7 @@ def add_extras(songs):
         song["url"] = f"song/{song['rank']}/"
         # "Belfast, N. Ireland" -> "Belfast" (fits on the record sticker).
         song["hometown_short"] = song["hometown"].split(",")[0].strip()
-        song["spotify_embed"] = spotify_embed(song.get("spotify_url"))
-        song["apple_embed"] = apple_embed(song.get("apple_music_url"))
+        song["listen"] = listen_rows(song)
         # Each polaroid on the wall leans a little, in a repeating pattern.
         song["tilt"] = TILTS[i % len(TILTS)]
 
@@ -129,8 +160,10 @@ def report_missing(songs):
         todo = []
         if not song.get("photo"):
             todo.append("photo")
-        if not (song["spotify_embed"] or song["apple_embed"]):
-            todo.append("Spotify / Apple Music link")
+        if not song["listen"]:
+            todo.append("listening links")
+        elif song.get("bandcamp_url") and not song.get("bandcamp_track_id"):
+            todo.append("bandcamp_track_id (so Bandcamp plays on the page)")
         if "[" in song["headline"] + song["essay"]:
             todo.append("writing")
         if todo:
