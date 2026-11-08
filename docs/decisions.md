@@ -22,3 +22,8 @@
 | 2026-11-08 | Build with Python + Jinja2 | Dan's language; matches other projects | spec §7 |
 | 2026-11-08 | Song data in one YAML file | Easiest to write essays by hand | spec §6 |
 | 2026-11-08 | GitHub Actions builds and publishes automatically | Matches other projects; no manual builds | spec §7 |
+| 2026-11-08 | Photo look baked into images by Python, not applied live in the browser | Fast on every phone, same in every browser, tweakable in Python | photos.py |
+| 2026-11-08 | Publish as a hidden preview (GitHub Pages, kept out of search) | Check it on a real phone before launch | songs.yaml `hidden_preview` |
+| 2026-11-08 | Up to five listening links: Bandcamp, Spotify, Apple Music, YouTube, YouTube Music | Cover every audience; Bandcamp pays artists best | spec §5 |
+| 2026-11-08 | Listening links shown as a cassette insert, Bandcamp first | Most zine-like; puts Bandcamp at the top | spec §5 |
+| 2026-11-08 | Magazine extras (Listen for, File next to, segue) as taped notes | Matches the tape and polaroids on the page | spec §5 |

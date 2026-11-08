@@ -112,6 +112,28 @@
       <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
       {% endif %}
     </article>
+
+    {% if song.listen_for or song.file_next_to or song.segue %}
+    <aside class="extras" aria-label="Notes">
+      {% if song.listen_for %}
+      <div class="note-scrap note-yellow">
+        <span class="tape tape-scrap-left" aria-hidden="true"></span>
+        <span class="mono strong note-label">LISTEN FOR</span>
+        <p>{% if song.listen_for_time %}<span class="note-time">{{ song.listen_for_time }}</span> {% endif %}{{ song.listen_for }}</p>
+      </div>
+      {% endif %}
+      {% if song.file_next_to %}
+      <div class="note-scrap note-white">
+        <span class="tape tape-scrap-right" aria-hidden="true"></span>
+        <span class="mono strong note-label">FILE NEXT TO</span>
+        <p>{{ song.file_next_to | join(" · ") }}</p>
+      </div>
+      {% endif %}
+      {% if song.segue %}
+      {% if song.next %}<a class="segue" href="{{ root }}{{ song.next.url }}">→ {{ song.segue }}</a>{% else %}<p class="segue">→ {{ song.segue }}</p>{% endif %}
+      {% endif %}
+    </aside>
+    {% endif %}
   </div>
 </div>
 

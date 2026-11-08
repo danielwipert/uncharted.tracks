@@ -91,10 +91,11 @@ Photos without an image yet show a red dotted placeholder.
 3. Photo caption and credit.
 4. Standfirst (one sentence) and byline.
 5. **Record sticker:** a small tilted record label showing the record label name and "FROM [HOMETOWN] · [MONTH] 2026", next to a "FILE UNDER" list (hometown, label, release month).
-6. Spotify and Apple Music buttons. The real players load only when tapped.
+6. **"Where to hear it" cassette insert:** a tape J-card listing up to five services as A1–A5: Bandcamp (highlighted, "buy it"), Spotify, Apple Music, YouTube, YouTube Music. Tapping Bandcamp, Spotify, Apple Music or YouTube opens that player on the page; YouTube Music opens the app/site. A marker note under it points people to Bandcamp, which pays the artist best.
 7. **Essay:** drop cap, 2–4 short paragraphs, a pull quote in big type, and an end mark.
-8. "Keep reading" block (next / previous / all 50).
-9. Fixed bottom bar (see Pages).
+8. **Taped notes (optional extras):** a yellow "Listen for" note (timestamp + the moment), a white "File next to" note (similar artists), and a marker segue line linking to the next song.
+9. "Keep reading" block (next / previous / all 50).
+10. Fixed bottom bar (see Pages).
 
 **Desktop:** the cover photo sits on the left half and stays in place while the essay scrolls on the right.
 
@@ -121,7 +122,11 @@ All 50 songs live in one YAML file. Changing the list next year means editing th
 | `standfirst` | One-sentence hook |
 | `essay` | 2–4 paragraphs (plain text, blank line between paragraphs) |
 | `pull_quote` | One line of Dan's own writing |
-| `spotify_url`, `apple_music_url` | Links for the players |
+| `bandcamp_url`, `bandcamp_track_id` | Bandcamp link, plus the track number from its embed code so it plays on the page |
+| `spotify_url`, `apple_music_url`, `youtube_url`, `youtube_music_url` | Other listening links (any can be left out) |
+| `listen_for_time`, `listen_for` | "Listen for" note, e.g. "1:42" and the moment |
+| `file_next_to` | List of 2–3 similar artists |
+| `segue` | One line handing off to the next song |
 | `songwriters`, `duration`, `catalog_no` | Optional, for the record sticker |
 
 ---
