@@ -11,6 +11,7 @@ Dan Wipert's top 50 songs of the year, as a zine-style website: a polaroid colla
 | --- | --- |
 | `songs.yaml` | All the content: every song, its details and its essay. This is the file you edit most. |
 | `build.py` | The Python script that turns `songs.yaml` into web pages. |
+| `photos.py` | Bakes the faded-polaroid look into each song photo. Tweak the look by editing `RECIPE` at the top. |
 | `templates/` | The page layouts (HTML with blanks that `build.py` fills in). |
 | `static/` | CSS, the worn-photo texture, and song photos (`static/img/photos/`). |
 | `_site/` | The finished website. Created by `build.py`; not saved in git. |

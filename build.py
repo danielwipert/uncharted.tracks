@@ -3,25 +3,31 @@
 What this script does, step by step:
   1. Reads every song from songs.yaml.
   2. Checks each song has the fields the pages need.
-  3. Fills in the HTML templates (in the templates/ folder) with that data.
-  4. Writes the finished website into the _site/ folder.
-  5. Copies the static files (CSS, fonts, images) next to it.
+  3. Makes the faded-polaroid copies of each song photo (see photos.py).
+  4. Fills in the HTML templates (in the templates/ folder) with that data.
+  5. Writes the finished website into the _site/ folder.
+  6. Copies the static files (CSS, images) next to it.
 
 Run it from this folder with:
     python build.py
 """
 
+import re
 import shutil
 from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from photos import make_treated_photos
+
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "songs.yaml"
 TEMPLATES = ROOT / "templates"
 STATIC = ROOT / "static"
 OUTPUT = ROOT / "_site"
+PHOTO_CACHE = ROOT / ".cache" / "photos"
+WEAR_TEXTURE = STATIC / "img" / "wear.png"
 
 # Every song must have these. Anything else (photo, songwriters...) is optional.
 REQUIRED_FIELDS = [
@@ -50,20 +56,68 @@ def check_songs(songs):
         if song.get("rank") in seen_ranks:
             problems.append(f"Rank {song.get('rank')} is used more than once")
         seen_ranks.add(song.get("rank"))
+        if song.get("photo") and not (STATIC / song["photo"]).exists():
+            problems.append(f"'{name}' photo not found: static/{song['photo']}")
     if problems:
         raise SystemExit("songs.yaml needs fixing:\n  - " + "\n  - ".join(problems))
+
+
+def spotify_embed(url):
+    """Turn a normal Spotify song link into its player link."""
+    m = re.search(r"open\.spotify\.com/(?:intl-[a-z]+/)?(track|album)/([A-Za-z0-9]+)", url or "")
+    return f"https://open.spotify.com/embed/{m.group(1)}/{m.group(2)}" if m else ""
+
+
+def apple_embed(url):
+    """Turn a normal Apple Music link into its player link."""
+    if url and "music.apple.com" in url:
+        return url.replace("https://music.apple.com", "https://embed.music.apple.com")
+    return ""
 
 
 def add_extras(songs):
     """Add the things templates need that aren't typed in by hand."""
     for i, song in enumerate(songs):
         # Split the essay into paragraphs at each blank line.
-        song["paragraphs"] = [p.strip() for p in song["essay"].split("\n\n") if p.strip()]
+        song["paragraphs"] = [" ".join(p.split()) for p in song["essay"].split("\n\n") if p.strip()]
         # Previous = the song before it in the countdown (higher rank number).
         # Next = the song after it (lower rank number, closer to No. 1).
         song["prev"] = songs[i - 1] if i > 0 else None
         song["next"] = songs[i + 1] if i < len(songs) - 1 else None
         song["url"] = f"song/{song['rank']}/"
+        # "Belfast, N. Ireland" -> "Belfast" (fits on the record sticker).
+        song["hometown_short"] = song["hometown"].split(",")[0].strip()
+        song["spotify_embed"] = spotify_embed(song.get("spotify_url"))
+        song["apple_embed"] = apple_embed(song.get("apple_music_url"))
+
+
+def make_photos(songs):
+    """Bake the faded-polaroid copies of every song photo."""
+    out_dir = OUTPUT / "static" / "img" / "treated"
+    for song in songs:
+        if not song.get("photo"):
+            song["cover_img"] = song["square_img"] = None
+            continue
+        names = make_treated_photos(
+            STATIC / song["photo"], out_dir, song["slug"], WEAR_TEXTURE, PHOTO_CACHE,
+            focus_y=song.get("photo_focus_y", 0.25),
+        )
+        song["cover_img"] = f"static/img/treated/{names['cover']}"
+        song["square_img"] = f"static/img/treated/{names['square']}"
+
+
+def report_missing(songs):
+    """Print (but don't stop for) things still to fill in."""
+    for song in songs:
+        todo = []
+        if not song.get("photo"):
+            todo.append("photo")
+        if not (song["spotify_embed"] or song["apple_embed"]):
+            todo.append("Spotify / Apple Music link")
+        if "[" in song["headline"] + song["essay"]:
+            todo.append("writing")
+        if todo:
+            print(f"  No. {song['rank']} {song['title']}: still needs {', '.join(todo)}")
 
 
 def build():
@@ -81,8 +135,12 @@ def build():
         shutil.rmtree(OUTPUT)
     OUTPUT.mkdir()
 
+    # CSS, images, etc. (copied first so treated photos land beside them).
+    shutil.copytree(STATIC, OUTPUT / "static")
+    make_photos(songs)
+
     # Home page.
-    home = env.get_template("home.html").render(site=site, songs=songs, root="")
+    home = env.get_template("home.html").render(site=site, songs=songs, total=site["list_size"], root="")
     (OUTPUT / "index.html").write_text(home, encoding="utf-8")
 
     # One page per song, at _site/song/<rank>/index.html
@@ -93,13 +151,11 @@ def build():
         html = song_template.render(site=site, song=song, total=site["list_size"], root="../../")
         (page_dir / "index.html").write_text(html, encoding="utf-8")
 
-    # CSS, images, etc.
-    shutil.copytree(STATIC, OUTPUT / "static")
-
     # Tells GitHub Pages to serve the files as-is.
     (OUTPUT / ".nojekyll").write_text("", encoding="utf-8")
 
     print(f"Built {len(songs)} song pages + home page into {OUTPUT.name}/")
+    report_missing(songs)
 
 
 if __name__ == "__main__":

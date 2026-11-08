@@ -1,19 +1,173 @@
 {% extends "base.html" %}
-{# Placeholder song page: the full magazine profile gets built in step 4. #}
 {% block title %}{{ song.title }} — {{ song.artist }} · {{ site.title }}{% endblock %}
+{% block head %}
+  <meta name="description" content="No. {{ song.rank }}: {{ song.title }} by {{ song.artist }}. {{ song.standfirst }}">
+  <meta property="og:title" content="No. {{ song.rank }}: {{ song.title }} — {{ song.artist }}">
+  <meta property="og:description" content="{{ song.standfirst }}">
+  {% if song.cover_img %}<meta property="og:image" content="{{ root }}{{ song.cover_img }}">{% endif %}
+{% endblock %}
 {% block content %}
-<main class="placeholder">
-  <p class="label"><a href="{{ root }}">TOP 50 ’{{ (site.year | string)[-2:] }}</a> · NO. {{ song.rank }} / {{ total }}</p>
-  <h1 class="headline">{{ song.headline }}</h1>
-  <p class="song-card"><em>“{{ song.title }}”</em> — {{ song.artist }}</p>
-  <p class="label">FILE UNDER: {{ song.hometown }} · {{ song.record_label }} · Released {{ song.release_month }} {{ site.year }}</p>
-  {% for paragraph in song.paragraphs %}
-  <p>{{ paragraph }}</p>
-  {% endfor %}
-  <nav class="label">
-    {% if song.prev %}<a href="{{ root }}{{ song.prev.url }}">← No. {{ song.prev.rank }}</a>{% endif %}
-    · <a href="{{ root }}">All 50</a> ·
-    {% if song.next %}<a href="{{ root }}{{ song.next.url }}">No. {{ song.next.rank }} →</a>{% endif %}
+<header class="topbar">
+  <a class="wordmark" href="{{ root }}">TOP 50 <span class="tag">’{{ (site.year | string)[-2:] }}</span></a>
+  <div class="topbar-right">
+    <span class="mono soft">NO. {{ song.rank }} / {{ total }}</span>
+    <a class="icon-btn" href="{{ root }}" aria-label="All {{ total }} songs">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="song-layout">
+
+  {# ---------- Cover: photo + headline + song card ---------- #}
+  <section class="cover-wrap">
+    <div class="cover">
+      <div class="cover-photo torn">
+        {% if song.cover_img %}
+        <img src="{{ root }}{{ song.cover_img }}" alt="{{ song.photo_alt }}" width="900" height="1350">
+        {% else %}
+        <div class="placeholder-dots" aria-hidden="true"></div>
+        {% endif %}
+        <div class="cover-text">
+          <span class="kicker">{{ song.genre_scene }}</span>
+          <h1 class="cover-headline"><span>{{ song.headline }}</span></h1>
+          <div class="song-card">
+            <span class="song-card-title">“{{ song.title }}”</span>
+            <span class="song-card-artist">{{ song.artist }}</span>
+          </div>
+        </div>
+      </div>
+      <span class="tape tape-cover" aria-hidden="true"></span>
+    </div>
+    <div class="big-rank" aria-hidden="true">{{ song.rank }}</div>
+    <p class="caption mono soft">{{ song.artist }}{% if song.photo_credit %} · {{ song.photo_credit }}{% endif %}</p>
+  </section>
+
+  {# ---------- Everything you read ---------- #}
+  <div class="song-body">
+    <p class="standfirst">{{ song.standfirst }}</p>
+    <p class="byline mono">WORDS BY {{ site.author | upper }}</p>
+
+    <section class="file-under">
+      <svg class="record" width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="Record label: {{ song.record_label }}, from {{ song.hometown }}, released {{ song.release_month }} {{ site.year }}">
+        <defs>
+          <path id="arcTop" d="M 30 100 A 70 70 0 0 1 170 100"/>
+          <path id="arcBot" d="M 24 100 A 76 76 0 0 0 176 100"/>
+        </defs>
+        <circle cx="100" cy="100" r="98" fill="var(--ink)"/>
+        <circle cx="100" cy="100" r="88" fill="var(--spot)"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="2 3"/>
+        <text class="record-label-name"><textPath href="#arcTop" startOffset="50%" text-anchor="middle">{{ song.record_label | upper }}</textPath></text>
+        <text class="record-small-bold"><textPath href="#arcBot" startOffset="50%" text-anchor="middle">FROM {{ song.hometown_short | upper }} · {{ song.release_month | upper }} {{ site.year }}</textPath></text>
+        <circle cx="100" cy="100" r="7" fill="var(--paper)" stroke="var(--ink)" stroke-width="2"/>
+        <text class="record-small" x="62" y="104" text-anchor="middle">SIDE A</text>
+        <text class="record-small" x="138" y="104" text-anchor="middle">45 RPM</text>
+        {% if song.catalog_no %}<text class="record-small" x="100" y="80" text-anchor="middle">{{ song.catalog_no }}</text>{% endif %}
+        <text class="record-title" x="100" y="126" text-anchor="middle">{{ song.title }}</text>
+        {% if song.songwriters or song.duration %}<text class="record-small" x="100" y="139" text-anchor="middle">{% if song.songwriters %}({{ song.songwriters }}){% endif %}{% if song.songwriters and song.duration %} · {% endif %}{{ song.duration or "" }}</text>{% endif %}
+      </svg>
+      <dl class="file-list mono">
+        <dt>FILE UNDER</dt>
+        <dd>{{ song.hometown }}</dd>
+        <dd>{{ song.record_label }}</dd>
+        <dd class="soft">Released {{ song.release_month }} {{ site.year }}</dd>
+      </dl>
+    </section>
+
+    {% if song.spotify_embed or song.apple_embed %}
+    <section class="listen" id="listen">
+      <div class="listen-buttons">
+        {% if song.spotify_embed %}
+        <button class="listen-btn dark" type="button" data-embed="{{ song.spotify_embed }}" data-service="Spotify" data-height="152">
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg> SPOTIFY
+        </button>
+        {% endif %}
+        {% if song.apple_embed %}
+        <button class="listen-btn light" type="button" data-embed="{{ song.apple_embed }}" data-service="Apple Music" data-height="175">
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg> APPLE MUSIC
+        </button>
+        {% endif %}
+      </div>
+      <div class="player" hidden></div>
+    </section>
+    {% endif %}
+
+    <article class="essay">
+      {% for paragraph in song.paragraphs %}
+      <p{% if loop.first %} class="first"{% endif %}>{{ paragraph }}{% if loop.last %} <span class="end-mark" aria-hidden="true"></span>{% endif %}</p>
+      {% if loop.index == 2 and song.pull_quote %}
+      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
+      {% endif %}
+      {% endfor %}
+      {% if song.paragraphs | length < 2 and song.pull_quote %}
+      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
+      {% endif %}
+    </article>
+  </div>
+</div>
+
+{# ---------- Keep reading ---------- #}
+<nav class="keep-reading torn-top" aria-label="More songs">
+  <div class="keep-inner">
+    <span class="mono keep-label">KEEP READING</span>
+    {% if song.next %}
+    <a class="next-card" href="{{ root }}{{ song.next.url }}">
+      <span><span class="mono small-bold">NEXT UP · NO. {{ song.next.rank }}</span><span class="next-title">{{ song.next.title }}</span></span>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M4 11h13M12 5l6 6-6 6"/></svg>
+    </a>
+    {% endif %}
+    <div class="keep-grid">
+      {% if song.prev %}
+      <a class="outline-card" href="{{ root }}{{ song.prev.url }}"><span class="mono small">← NO. {{ song.prev.rank }}</span><span class="prev-title">{{ song.prev.title }}</span></a>
+      {% endif %}
+      <a class="outline-card center" href="{{ root }}">ALL {{ total }} SONGS</a>
+    </div>
+    <span class="mono keep-foot">{{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</span>
+  </div>
+</nav>
+
+{# ---------- Fixed bottom bar ---------- #}
+<div class="bottom-dock">
+  <div class="now-playing" hidden>
+    <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="np-text">
+      <span class="np-title">{{ song.title }}</span>
+      <span class="mono small-bold np-service">PLAYER OPEN</span>
+    </div>
+    <a class="np-btn" href="#listen" aria-label="Go to the player">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M8 13V3M3 8l5-5 5 5"/></svg>
+    </a>
+  </div>
+  <nav class="bottom-bar" aria-label="Song navigation">
+    {% if song.prev %}
+    <a href="{{ root }}{{ song.prev.url }}"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M18 11H5M10 5l-6 6 6 6"/></svg><span class="mono small-bold">NO. {{ song.prev.rank }}</span><span class="bar-name">{{ song.prev.title }}</span></a>
+    {% else %}<span></span>{% endif %}
+    <a class="bar-all" href="{{ root }}"><span class="bar-all-word">ALL {{ total }}</span><span class="mono small soft-light">{{ song.rank }} / {{ total }}</span></a>
+    {% if song.next %}
+    <a class="bar-next" href="{{ root }}{{ song.next.url }}"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M4 11h13M12 5l6 6-6 6"/></svg><span class="mono small-bold">NO. {{ song.next.rank }}</span><span class="bar-name">{{ song.next.title }}</span></a>
+    {% else %}<span></span>{% endif %}
   </nav>
-</main>
+</div>
+
+<script>
+  // Players load only when tapped (keeps the page fast).
+  document.querySelectorAll('.listen-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var box = document.querySelector('.player');
+      box.innerHTML = '';
+      var frame = document.createElement('iframe');
+      frame.src = btn.dataset.embed;
+      frame.height = btn.dataset.height;
+      frame.title = btn.dataset.service + ' player';
+      frame.allow = 'autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture';
+      frame.loading = 'lazy';
+      box.appendChild(frame);
+      box.hidden = false;
+      var strip = document.querySelector('.now-playing');
+      strip.querySelector('.np-service').textContent = 'PLAYER OPEN · ' + btn.dataset.service.toUpperCase();
+      strip.hidden = false;
+      document.querySelectorAll('.listen-btn').forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+    });
+  });
+</script>
 {% endblock %}

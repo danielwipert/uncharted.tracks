@@ -1,6 +1,9 @@
 # Built site (GitHub builds it fresh on every push)
 _site/
 
+# Saved copies of the faded photos, so rebuilds are quick
+.cache/
+
 # Python
 __pycache__/
 *.pyc
