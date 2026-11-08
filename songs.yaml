@@ -41,10 +41,12 @@ songs:
 
       [Third paragraph: why it earned its spot this year, and who should hear it.]
     duration: "3:00"
-    # Magazine extras (all optional; leave any out and that note won't show).
-    listen_for_time: "[1:42]"
-    listen_for: "[the moment to wait for, in a few words]"
-    file_next_to: ["[Artist]", "[Artist]", "[Artist]"]
+    # "In their own words": a short quote from the artist (keep it under ~15 words),
+    # who it's from and where they said it. All optional.
+    quote: "There is something so comforting about Mulder and Scully's relationship."
+    quote_source: "Track notes for “Something Else,” via Atwood Magazine, March 2026"
+    quote_url: "https://atwoodmagazine.com/jbok-joshua-burnside-its-not-going-to-be-okay-album-interview-music-feature/"
+    # One line that hands the reader off to the next song (optional).
     segue: "[One line that hands you off to the next song…]"
     # Where to hear it. Leave any of these out and that row just won't show.
     bandcamp_url: "https://joshuaburnside.bandcamp.com/track/something-else"

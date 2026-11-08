@@ -113,21 +113,19 @@
       {% endif %}
     </article>
 
-    {% if song.listen_for or song.file_next_to or song.segue %}
+    {% if song.quote or song.segue %}
     <aside class="extras" aria-label="Notes">
-      {% if song.listen_for %}
-      <div class="note-scrap note-yellow">
+      {% if song.quote %}
+      <figure class="note-scrap own-words">
         <span class="tape tape-scrap-left" aria-hidden="true"></span>
-        <span class="mono strong note-label">LISTEN FOR</span>
-        <p>{% if song.listen_for_time %}<span class="note-time">{{ song.listen_for_time }}</span> {% endif %}{{ song.listen_for }}</p>
-      </div>
-      {% endif %}
-      {% if song.file_next_to %}
-      <div class="note-scrap note-white">
         <span class="tape tape-scrap-right" aria-hidden="true"></span>
-        <span class="mono strong note-label">FILE NEXT TO</span>
-        <p>{{ song.file_next_to | join(" · ") }}</p>
-      </div>
+        <figcaption class="mono strong note-label">IN THEIR OWN WORDS</figcaption>
+        <blockquote>
+          <span class="big-quote" aria-hidden="true">“</span>
+          <p>{{ song.quote }}</p>
+        </blockquote>
+        <p class="own-words-credit mono">— {{ song.artist }}{% if song.quote_source %}, {% if song.quote_url %}<a href="{{ song.quote_url }}" target="_blank" rel="noopener">{{ song.quote_source }}</a>{% else %}{{ song.quote_source }}{% endif %}{% endif %}</p>
+      </figure>
       {% endif %}
       {% if song.segue %}
       {% if song.next %}<a class="segue" href="{{ root }}{{ song.next.url }}">→ {{ song.segue }}</a>{% else %}<p class="segue">→ {{ song.segue }}</p>{% endif %}

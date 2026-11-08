@@ -113,21 +113,22 @@ img { display: block; max-width: 100%; }
 .pull-quote p { margin: 0; font-family: var(--font-display); font-size: 30px; line-height: 1.05; text-transform: uppercase; }
 .end-mark { display: inline-block; width: 12px; height: 12px; background: var(--spot); border: 2px solid var(--ink); vertical-align: middle; margin-left: 4px; }
 
-/* ---------- Magazine extras: taped notes ---------- */
-.extras { margin-top: 36px; display: flex; flex-direction: column; gap: 28px; }
-.note-scrap { position: relative; padding: 18px 16px 14px; box-shadow: 2px 3px 0 rgba(22, 20, 18, 0.25); }
-.note-scrap p { margin: 6px 0 0; font-family: var(--font-marker); font-size: 19px; line-height: 1.35; }
-.note-label { font-size: 11px; letter-spacing: 0.08em; }
-.note-yellow { background: #FFF6B8; transform: rotate(-2deg); }
-.note-white { background: #FFFDF6; border: 1px solid var(--ink); transform: rotate(1.5deg); }
-.note-time { background: var(--spot); padding: 0 4px; }
+/* ---------- Extras: "In their own words" note + segue ---------- */
+.extras { margin-top: 40px; display: flex; flex-direction: column; gap: 26px; }
+.note-scrap { position: relative; margin: 0; padding: 20px 18px 16px; box-shadow: 2px 3px 0 rgba(22, 20, 18, 0.25); }
+.note-label { display: block; font-size: 11px; letter-spacing: 0.08em; }
+.own-words { background: #FFFDF6; border: 1px solid var(--ink); transform: rotate(-1.2deg); }
+.own-words blockquote { position: relative; margin: 10px 0 0; padding-left: 34px; }
+.own-words .big-quote { position: absolute; left: -2px; top: -14px; font-family: var(--font-display); font-size: 72px; line-height: 1; color: var(--spot); -webkit-text-stroke: 1.5px var(--ink); }
+.own-words blockquote p { margin: 0; font-size: 22px; line-height: 1.35; font-style: italic; }
+.own-words-credit { margin: 12px 0 0; font-size: 11px; line-height: 1.5; color: var(--ink-soft); }
+.own-words-credit a { color: var(--ink-soft); text-decoration-color: var(--spot); text-decoration-thickness: 2px; }
 .tape-scrap-left { top: -10px; left: 20px; width: 70px; height: 20px; transform: rotate(-6deg); }
 .tape-scrap-right { top: -10px; right: 24px; width: 70px; height: 20px; transform: rotate(5deg); }
-.segue { display: block; margin-top: 2px; font-family: var(--font-marker); font-size: 18px; line-height: 1.3; color: var(--ink); text-decoration: none; transform: rotate(-1deg); }
+.segue { display: block; font-family: var(--font-marker); font-size: 18px; line-height: 1.3; color: var(--ink); text-decoration: none; transform: rotate(-1deg); }
 a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decoration-color: var(--spot); text-decoration-thickness: 3px; }
-@media (min-width: 640px) {
-  .extras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; align-items: start; }
-  .extras .segue { grid-column: 1 / -1; }
+@media (min-width: 1024px) {
+  .own-words blockquote p { font-size: 26px; }
 }
 
 /* ---------- Keep reading ---------- */

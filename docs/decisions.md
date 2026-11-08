@@ -27,3 +27,4 @@
 | 2026-11-08 | Up to five listening links: Bandcamp, Spotify, Apple Music, YouTube, YouTube Music | Cover every audience; Bandcamp pays artists best | spec §5 |
 | 2026-11-08 | Listening links shown as a cassette insert, Bandcamp first | Most zine-like; puts Bandcamp at the top | spec §5 |
 | 2026-11-08 | Magazine extras (Listen for, File next to, segue) as taped notes | Matches the tape and polaroids on the page | spec §5 |
+| 2026-11-08 | Replace "Listen for" and "File next to" with one "In their own words" artist quote | Too much information on the page; the artist's voice adds more | spec §5 |

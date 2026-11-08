@@ -93,7 +93,7 @@ Photos without an image yet show a red dotted placeholder.
 5. **Record sticker:** a small tilted record label showing the record label name and "FROM [HOMETOWN] · [MONTH] 2026", next to a "FILE UNDER" list (hometown, label, release month).
 6. **"Where to hear it" cassette insert:** a tape J-card listing up to five services as A1–A5: Bandcamp (highlighted, "buy it"), Spotify, Apple Music, YouTube, YouTube Music. Tapping Bandcamp, Spotify, Apple Music or YouTube opens that player on the page; YouTube Music opens the app/site. A marker note under it points people to Bandcamp, which pays the artist best.
 7. **Essay:** drop cap, 2–4 short paragraphs, a pull quote in big type, and an end mark.
-8. **Taped notes (optional extras):** a yellow "Listen for" note (timestamp + the moment), a white "File next to" note (similar artists), and a marker segue line linking to the next song.
+8. **"In their own words" (optional):** a taped note with a short quote from the artist (under ~15 words), from an interview or their own notes, credited and linked to the source. Then an optional marker segue line linking to the next song.
 9. "Keep reading" block (next / previous / all 50).
 10. Fixed bottom bar (see Pages).
 
@@ -124,8 +124,7 @@ All 50 songs live in one YAML file. Changing the list next year means editing th
 | `pull_quote` | One line of Dan's own writing |
 | `bandcamp_url`, `bandcamp_track_id` | Bandcamp link, plus the track number from its embed code so it plays on the page |
 | `spotify_url`, `apple_music_url`, `youtube_url`, `youtube_music_url` | Other listening links (any can be left out) |
-| `listen_for_time`, `listen_for` | "Listen for" note, e.g. "1:42" and the moment |
-| `file_next_to` | List of 2–3 similar artists |
+| `quote`, `quote_source`, `quote_url` | Short artist quote, where it's from, and a link |
 | `segue` | One line handing off to the next song |
 | `songwriters`, `duration`, `catalog_no` | Optional, for the record sticker |
 
