@@ -1,14 +1,117 @@
 {% extends "base.html" %}
-{# Placeholder home page: the collage wall gets built in step 5. #}
+{% block head %}
+  <meta name="description" content="{{ site.author }}'s {{ total }} favorite songs of {{ site.year }}, one short essay each.">
+  <meta property="og:title" content="{{ site.title }}">
+  <meta property="og:description" content="{{ site.author }}'s {{ total }} favorite songs of {{ site.year }}.">
+{% endblock %}
 {% block content %}
-<main class="placeholder">
-  <p class="label">THE {{ site.year }} ISSUE · {{ site.author | upper }}</p>
-  <h1 class="masthead">TOP 50</h1>
-  <p class="note">{{ site.editors_note }}</p>
-  <ol class="simple-list">
-    {% for song in songs %}
-    <li><a href="{{ song.url }}"><span class="rank">{{ song.rank }}</span> {{ song.title }} <span class="artist">— {{ song.artist }}</span></a></li>
+<div class="home">
+
+  <header class="home-header">
+    <div class="masthead-block">
+      <span class="mono strong">THE {{ site.year }} ISSUE · {{ site.author | upper }}</span>
+      <div class="masthead-row">
+        <h1 class="masthead">TOP {{ total }}</h1>
+        <span class="tap-sticker mono strong">TAP A PHOTO</span>
+      </div>
+    </div>
+    <section class="editors-note" aria-label="Editor's note">
+      <span class="tape tape-note" aria-hidden="true"></span>
+      <span class="mono strong">EDITOR’S NOTE</span>
+      <p>{{ site.editors_note }}</p>
+      <p class="signature">— {{ site.author.split()[0] }}</p>
+    </section>
+  </header>
+
+  <nav class="jump-bar" aria-label="Jump to">
+    {% for part in parts %}
+    <a href="#{{ part.id }}" class="mono strong{% if loop.first %} is-first{% endif %}">{{ part.label }}</a>
     {% endfor %}
-  </ol>
-</main>
+    {% if top_ten %}<a href="#top-ten" class="mono strong">10–1</a>{% endif %}
+  </nav>
+
+  {# ---------- The wall: No. 50 to No. 11 ---------- #}
+  {% for part in parts %}
+  <section class="wall-part" id="{{ part.id }}" aria-label="Songs {{ part.label }}">
+    <h2 class="part-label mono strong">{{ part.label }}</h2>
+    <ol class="wall">
+      {% for song in part.songs %}
+      <li>
+        <a class="polaroid" href="{{ song.url }}" style="--tilt: {{ song.tilt }}">
+          <span class="polaroid-photo">
+            {% if song.square_img %}
+            <img src="{{ song.square_img }}" alt="{{ song.photo_alt }}" width="720" height="720" loading="lazy">
+            {% else %}
+            <span class="placeholder-dots" aria-hidden="true"></span>
+            {% endif %}
+          </span>
+          <span class="polaroid-title">{{ song.title }}</span>
+          <span class="polaroid-artist mono">{{ song.artist }}</span>
+          <span class="tape tape-polaroid" aria-hidden="true"></span>
+          <span class="rank-sticker" aria-label="Number {{ song.rank }}">{{ song.rank }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+
+  {# ---------- The top 10 ---------- #}
+  {% if top_ten %}
+  <section class="top-ten" id="top-ten" aria-labelledby="top-ten-heading">
+    <div class="top-ten-head">
+      <h2 id="top-ten-heading">THE TOP 10</h2>
+      <span class="big-ones">the big ones</span>
+    </div>
+    <ol class="wall wall-big">
+      {% for song in top_ten %}
+      <li>
+        <a class="polaroid big{% if song.rank <= 3 %} developing{% endif %}" href="{{ song.url }}" style="--tilt: {{ song.tilt }}">
+          <span class="polaroid-photo">
+            {% if song.square_img %}
+            <img src="{{ song.square_img }}" alt="{{ song.photo_alt }}" width="720" height="720" loading="lazy">
+            {% else %}
+            <span class="placeholder-dots" aria-hidden="true"></span>
+            {% endif %}
+            {% if song.rank <= 3 %}<span class="undeveloped" aria-hidden="true">??</span>{% endif %}
+          </span>
+          <span class="polaroid-caption">
+            <span class="polaroid-title">{{ song.title }}</span>
+            <span class="polaroid-artist mono">{{ song.artist }} · {{ song.hometown }}</span>
+            {% if song.rank <= 3 %}<span class="still-developing" aria-hidden="true"><span class="polaroid-title">keep scrolling…</span><span class="polaroid-artist mono">No. {{ song.rank }} · still developing</span></span>{% endif %}
+          </span>
+          <span class="tape tape-polaroid" aria-hidden="true"></span>
+          <span class="rank-sticker" aria-label="Number {{ song.rank }}">{{ song.rank }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  <footer class="home-footer mono">{{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</footer>
+</div>
+
+<script>
+  // The top 3 polaroids start blank and "develop" when scrolled into view.
+  (function () {
+    var cards = document.querySelectorAll('.polaroid.developing');
+    if (!cards.length) return;
+    document.documentElement.classList.add('can-develop');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      cards.forEach(function (c) { c.classList.add('developed'); });
+      return;
+    }
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          setTimeout(function () { e.target.classList.add('developed'); }, 400);
+          seen.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    cards.forEach(function (c) { seen.observe(c); });
+  })();
+</script>
 {% endblock %}

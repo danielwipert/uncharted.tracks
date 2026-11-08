@@ -89,6 +89,23 @@ def add_extras(songs):
         song["hometown_short"] = song["hometown"].split(",")[0].strip()
         song["spotify_embed"] = spotify_embed(song.get("spotify_url"))
         song["apple_embed"] = apple_embed(song.get("apple_music_url"))
+        # Each polaroid on the wall leans a little, in a repeating pattern.
+        song["tilt"] = TILTS[i % len(TILTS)]
+
+
+TILTS = ["-2.5deg", "2deg", "1.5deg", "-1.5deg", "-3deg", "2.5deg", "1deg", "-2deg"]
+
+
+def group_for_home(songs):
+    """Split the songs into groups of ten for the wall (No. 50-41, 40-31, ...)
+    and the top 10, which gets its own bigger section."""
+    parts = []
+    for top in range(50, 10, -10):
+        group = [s for s in songs if top - 9 <= s["rank"] <= top]
+        if group:
+            parts.append({"id": f"p{top}", "label": f"{top}–{top - 9}", "songs": group})
+    top_ten = [s for s in songs if s["rank"] <= 10]
+    return parts, top_ten
 
 
 def make_photos(songs):
@@ -140,7 +157,9 @@ def build():
     make_photos(songs)
 
     # Home page.
-    home = env.get_template("home.html").render(site=site, songs=songs, total=site["list_size"], root="")
+    parts, top_ten = group_for_home(songs)
+    home = env.get_template("home.html").render(
+        site=site, songs=songs, parts=parts, top_ten=top_ten, total=site["list_size"], root="")
     (OUTPUT / "index.html").write_text(home, encoding="utf-8")
 
     # One page per song, at _site/song/<rank>/index.html
@@ -159,4 +178,14 @@ def build():
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build the Top 50 site.")
+    parser.add_argument("--data", help="use a different songs file (for testing)")
+    parser.add_argument("--out", help="write the site to a different folder (for testing)")
+    args = parser.parse_args()
+    if args.data:
+        DATA_FILE = Path(args.data)
+    if args.out:
+        OUTPUT = Path(args.out)
     build()
