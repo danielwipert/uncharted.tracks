@@ -173,6 +173,10 @@ def build():
     # Tells GitHub Pages to serve the files as-is.
     (OUTPUT / ".nojekyll").write_text("", encoding="utf-8")
 
+    # While it's a hidden preview, ask search engines to stay away.
+    robots = "User-agent: *\nDisallow: /\n" if site.get("hidden_preview") else "User-agent: *\nAllow: /\n"
+    (OUTPUT / "robots.txt").write_text(robots, encoding="utf-8")
+
     print(f"Built {len(songs)} song pages + home page into {OUTPUT.name}/")
     report_missing(songs)
 

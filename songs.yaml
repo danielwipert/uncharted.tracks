@@ -8,6 +8,9 @@
 #   - "photo" is optional. Leave it out and the site shows a red dotted placeholder.
 
 site:
+  # true = a hidden preview: search engines are asked not to list the site.
+  # Change to false on launch day.
+  hidden_preview: true
   year: 2026
   list_size: 50
   title: "Top 50 of 2026"
