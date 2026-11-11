@@ -64,13 +64,14 @@
         <text class="record-small" x="138" y="104" text-anchor="middle">45 RPM</text>
         {% if song.catalog_no %}<text class="record-small" x="100" y="80" text-anchor="middle">{{ song.catalog_no }}</text>{% endif %}
         <text class="record-title" x="100" y="126" text-anchor="middle">{{ song.title }}</text>
-        {% if song.songwriters or song.duration %}<text class="record-small" x="100" y="139" text-anchor="middle">{% if song.songwriters %}({{ song.songwriters }}){% endif %}{% if song.songwriters and song.duration %} · {% endif %}{{ song.duration or "" }}</text>{% endif %}
+        {% if song.duration %}<text class="record-small" x="100" y="139" text-anchor="middle">{{ song.duration }}</text>{% endif %}
       </svg>
       <dl class="file-list mono">
         <dt>FILE UNDER</dt>
         <dd>{{ song.hometown }}</dd>
         <dd>{{ song.record_label }}</dd>
         <dd class="soft">Released {{ song.release_month }} {{ site.year }}</dd>
+        {% if song.songwriters %}<dd class="soft">Written by {{ song.songwriters }}</dd>{% endif %}
       </dl>
     </section>
 
