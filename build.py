@@ -122,7 +122,11 @@ def add_extras(songs):
         song["listen"] = listen_rows(song)
         # Each polaroid on the wall leans a little, in a repeating pattern.
         song["tilt"] = TILTS[i % len(TILTS)]
+        # Each song gets one print-shop ink, rotating by rank (No. 50 = red, 49 = mustard, ...).
+        song["ink"] = f"var(--ink-{INKS[(50 - song['rank']) % len(INKS)]})"
 
+
+INKS = ["red", "mustard", "teal", "pink", "cobalt", "olive", "tangerine", "sky", "violet", "mint"]
 
 TILTS = ["-2.5deg", "2deg", "1.5deg", "-1.5deg", "-3deg", "2.5deg", "1deg", "-2deg"]
 

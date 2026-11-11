@@ -17,7 +17,7 @@
   </div>
 </header>
 
-<div class="song-layout">
+<div class="song-layout" style="--song: {{ song.ink }}">
 
   {# ---------- Cover: photo + song card ---------- #}
   <section class="cover-wrap">
@@ -63,7 +63,7 @@
           <path id="arcBot" d="M 24 100 A 76 76 0 0 0 176 100"/>
         </defs>
         <circle cx="100" cy="100" r="98" fill="var(--ink)"/>
-        <circle cx="100" cy="100" r="88" fill="var(--spot)"/>
+        <circle cx="100" cy="100" r="88" fill="var(--song)"/>
         <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="2 3"/>
         <text class="record-label-name"><textPath href="#arcTop" startOffset="50%" text-anchor="middle">{{ song.record_label | upper }}</textPath></text>
         <text class="record-small-bold"><textPath href="#arcBot" startOffset="50%" text-anchor="middle">FROM {{ song.hometown_short | upper }} · {{ song.release_month | upper }} {{ site.year }}</textPath></text>
@@ -137,7 +137,7 @@
   <div class="keep-inner">
     <span class="mono keep-label">KEEP READING</span>
     {% if song.next %}
-    <a class="next-card" href="{{ root }}{{ song.next.url }}">
+    <a class="next-card" href="{{ root }}{{ song.next.url }}" style="--song: {{ song.next.ink }}">
       <span><span class="mono small-bold">NEXT UP · NO. {{ song.next.rank }}</span><span class="next-title">{{ song.next.title }}</span><span class="mono keep-artist">{{ song.next.artist }}</span></span>
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M4 11h13M12 5l6 6-6 6"/></svg>
     </a>

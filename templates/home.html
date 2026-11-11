@@ -38,7 +38,7 @@
     <ol class="wall">
       {% for song in part.songs %}
       <li>
-        <a class="polaroid" href="{{ song.url }}" style="--tilt: {{ song.tilt }}">
+        <a class="polaroid" href="{{ song.url }}" style="--tilt: {{ song.tilt }}; --song: {{ song.ink }}">
           <span class="polaroid-photo">
             {% if song.square_img %}
             <img src="{{ song.square_img }}" alt="{{ song.photo_alt }}" width="720" height="720" loading="lazy">
@@ -67,7 +67,7 @@
     <ol class="wall wall-big">
       {% for song in top_ten %}
       <li>
-        <a class="polaroid big{% if song.rank <= 3 %} developing{% endif %}" href="{{ song.url }}" style="--tilt: {{ song.tilt }}">
+        <a class="polaroid big{% if song.rank <= 3 %} developing{% endif %}" href="{{ song.url }}" style="--tilt: {{ song.tilt }}; --song: {{ song.ink }}">
           <span class="polaroid-photo">
             {% if song.square_img %}
             <img src="{{ song.square_img }}" alt="{{ song.photo_alt }}" width="720" height="720" loading="lazy">

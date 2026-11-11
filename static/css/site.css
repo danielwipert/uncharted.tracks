@@ -9,6 +9,20 @@
   --on-dark-soft: #C9C1B3;
   --spot: #F46F52;          /* red-orange spot color for UI (softened from #FF5A36 on 2026-11-11) */
   --polaroid: #F1E5C0;      /* yellowed polaroid frame */
+
+  /* Print-shop inks: each song gets one (assigned by rank in build.py).
+     Red (--spot) stays on the site's frame: header tags, jump buttons, bottom bar, Bandcamp row. */
+  --ink-red: #F46F52;
+  --ink-mustard: #E8B53E;
+  --ink-teal: #3FA39A;
+  --ink-pink: #EE8BB0;
+  --ink-cobalt: #5A7FD6;
+  --ink-olive: #A3A84E;
+  --ink-tangerine: #F3954A;
+  --ink-sky: #6DB6DE;
+  --ink-violet: #9C80D0;
+  --ink-mint: #8FD1B0;
+  --song: var(--spot);      /* overridden per song with style="--song: ..." */
   --tape: rgba(242, 237, 227, 0.8);
 
   --font-display: 'Anton', sans-serif;
@@ -44,7 +58,7 @@ img { display: block; max-width: 100%; }
 .soft { color: var(--ink-soft); }
 .torn { clip-path: polygon(0 0,100% 0,100% 95%,96% 98%,92% 95.5%,87% 99%,82% 96%,76% 98.5%,70% 95%,64% 99%,58% 96%,52% 98%,46% 95.5%,40% 99%,34% 96%,28% 98.5%,22% 95%,16% 98%,10% 96%,5% 99%,0 96%); }
 .torn-top { clip-path: polygon(0 18px,5% 0,10% 12px,16% 4px,22% 16px,28% 0,34% 12px,40% 4px,46% 16px,52% 0,58% 12px,64% 4px,70% 16px,76% 0,82% 12px,87% 4px,92% 16px,96% 0,100% 12px,100% 100%,0 100%); }
-.placeholder-dots { position: absolute; inset: 0; background-color: var(--spot); background-image: radial-gradient(var(--ink) 1.1px, transparent 1.7px); background-size: 6px 6px; }
+.placeholder-dots { position: absolute; inset: 0; background-color: var(--song); background-image: radial-gradient(var(--ink) 1.1px, transparent 1.7px); background-size: 6px 6px; }
 
 /* ---------- Song page: top bar ---------- */
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: 8px var(--gutter); border-bottom: 3px solid var(--ink); }
@@ -61,12 +75,12 @@ img { display: block; max-width: 100%; }
 .cover-photo { position: relative; aspect-ratio: 9 / 14; max-height: 82vh; width: 100%; background: #4A3622; overflow: hidden; }
 .cover-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cover-text { position: absolute; left: 12px; right: 12px; bottom: 44px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; transform: rotate(1.5deg); }
-.song-card { margin: 0; font-size: inherit; font-weight: inherit; display: flex; flex-direction: column; gap: 2px; background: var(--spot); padding: 8px 12px; border: 2px solid var(--ink); transform: rotate(-1deg); }
+.song-card { margin: 0; font-size: inherit; font-weight: inherit; display: flex; flex-direction: column; gap: 2px; background: var(--song); padding: 8px 12px; border: 2px solid var(--ink); transform: rotate(-1deg); }
 .song-card-title { font-size: 22px; font-weight: 600; font-style: italic; line-height: 1.15; }
 .song-card-artist { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .tape { position: absolute; background: var(--tape); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); }
 .tape-cover { top: -12px; left: 28px; width: 92px; height: 26px; transform: rotate(-8deg); }
-.big-rank { position: absolute; right: 10px; top: 4px; font-family: var(--font-display); font-size: 120px; line-height: 0.8; color: var(--spot); -webkit-text-stroke: 3px var(--ink); transform: rotate(4deg); pointer-events: none; }
+.big-rank { position: absolute; right: 10px; top: 4px; font-family: var(--font-display); font-size: 120px; line-height: 0.8; color: var(--song); -webkit-text-stroke: 3px var(--ink); transform: rotate(4deg); pointer-events: none; }
 .caption { margin: 14px 0 0; line-height: 1.5; }
 
 /* ---------- Song page: reading column ---------- */
@@ -106,10 +120,10 @@ img { display: block; max-width: 100%; }
 
 .essay { padding-top: 16px; font-size: 18px; line-height: 1.6; }
 .essay p { margin: 0 0 18px; }
-.essay p.first::first-letter { float: left; font-family: var(--font-display); font-size: 86px; line-height: 0.82; margin: 6px 10px 0 0; padding: 4px 8px 2px; background: var(--spot); }
+.essay p.first::first-letter { float: left; font-family: var(--font-display); font-size: 86px; line-height: 0.82; margin: 6px 10px 0 0; padding: 4px 8px 2px; background: var(--song); }
 .pull-quote { margin: 26px 0; padding: 18px 0; border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: rotate(-1deg); }
 .pull-quote p { margin: 0; font-family: var(--font-display); font-size: 30px; line-height: 1.05; text-transform: uppercase; }
-.end-mark { display: inline-block; width: 12px; height: 12px; background: var(--spot); border: 2px solid var(--ink); vertical-align: middle; margin-left: 4px; }
+.end-mark { display: inline-block; width: 12px; height: 12px; background: var(--song); border: 2px solid var(--ink); vertical-align: middle; margin-left: 4px; }
 
 /* ---------- Extras: "In their own words" note + segue ---------- */
 .extras { margin-top: 40px; display: flex; flex-direction: column; gap: 26px; }
@@ -117,14 +131,14 @@ img { display: block; max-width: 100%; }
 .note-label { display: block; font-size: 11px; letter-spacing: 0.08em; }
 .own-words { background: #FFFDF6; border: 1px solid var(--ink); transform: rotate(-1.2deg); }
 .own-words blockquote { position: relative; margin: 10px 0 0; padding-left: 34px; }
-.own-words .big-quote { position: absolute; left: -2px; top: -14px; font-family: var(--font-display); font-size: 72px; line-height: 1; color: var(--spot); -webkit-text-stroke: 1.5px var(--ink); }
+.own-words .big-quote { position: absolute; left: -2px; top: -14px; font-family: var(--font-display); font-size: 72px; line-height: 1; color: var(--song); -webkit-text-stroke: 1.5px var(--ink); }
 .own-words blockquote p { margin: 0; font-size: 22px; line-height: 1.35; font-style: italic; }
 .own-words-credit { margin: 12px 0 0; font-size: 11px; line-height: 1.5; color: var(--ink-soft); }
-.own-words-credit a { color: var(--ink-soft); text-decoration-color: var(--spot); text-decoration-thickness: 2px; }
+.own-words-credit a { color: var(--ink-soft); text-decoration-color: var(--song); text-decoration-thickness: 2px; }
 .tape-scrap-left { top: -10px; left: 20px; width: 70px; height: 20px; transform: rotate(-6deg); }
 .tape-scrap-right { top: -10px; right: 24px; width: 70px; height: 20px; transform: rotate(5deg); }
 .segue { display: block; font-family: var(--font-marker); font-size: 18px; line-height: 1.3; color: var(--ink); text-decoration: none; transform: rotate(-1deg); }
-a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decoration-color: var(--spot); text-decoration-thickness: 3px; }
+a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decoration-color: var(--song); text-decoration-thickness: 3px; }
 @media (min-width: 1024px) {
   .own-words blockquote p { font-size: 26px; }
 }
@@ -134,7 +148,7 @@ a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decorati
 .keep-inner { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 .keep-label, .keep-foot { color: var(--on-dark-soft); letter-spacing: 0.08em; }
 .keep-foot { margin-top: 14px; font-size: 11px; }
-.next-card { display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding: 8px 14px; background: var(--spot); color: var(--ink); text-decoration: none; }
+.next-card { display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding: 8px 14px; background: var(--song); color: var(--ink); text-decoration: none; }
 .next-card > span { display: flex; flex-direction: column; }
 .next-title, .prev-title { font-family: var(--font-display); text-transform: uppercase; }
 .next-title { font-size: 22px; }
@@ -232,7 +246,7 @@ a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decorati
 .polaroid-title { margin-top: 9px; font-family: var(--font-marker); font-size: 18px; line-height: 1.15; color: #1F1C1A; transform: rotate(-1.5deg); transform-origin: left center; }
 .polaroid-artist { margin-top: 3px; font-size: 11px; color: var(--ink-soft); text-transform: uppercase; }
 .tape-polaroid { top: -10px; left: 50%; width: 70px; height: 20px; margin-left: -35px; transform: rotate(-4deg); }
-.rank-sticker { position: absolute; right: -8px; top: calc(100% - 92px); width: 50px; height: 50px; border-radius: 50%; background: var(--spot); border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 22px; line-height: 1; }
+.rank-sticker { position: absolute; right: -8px; top: calc(100% - 92px); width: 50px; height: 50px; border-radius: 50%; background: var(--song); border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 22px; line-height: 1; }
 
 /* ---------- The top 10 ---------- */
 .top-ten { margin-top: 56px; padding: 0 14px; scroll-margin-top: 12px; }
