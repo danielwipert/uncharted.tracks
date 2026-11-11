@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block head %}
   <meta name="description" content="{{ site.author }}'s {{ total }} favorite songs of {{ site.year }}, one short essay each.">
-  <meta property="og:title" content="{{ site.title }}">
+  <meta property="og:title" content="{{ site.brand }} · {{ site.title }}">
   <meta property="og:description" content="{{ site.author }}'s {{ total }} favorite songs of {{ site.year }}.">
 {% endblock %}
 {% block content %}
@@ -9,9 +9,10 @@
 
   <header class="home-header">
     <div class="masthead-block">
-      <span class="mono strong">THE {{ site.year }} ISSUE · {{ site.author | upper }}</span>
+      <p class="nameplate">{{ site.brand | upper }}</p>
+      <span class="mono strong">THE {{ site.year }} ISSUE · A ZINE BY {{ site.author | upper }}</span>
       <div class="masthead-row">
-        <h1 class="masthead">TOP {{ total }}</h1>
+        <h1 class="masthead"><span class="visually-hidden">{{ site.brand }}: </span>TOP {{ total }} <span class="masthead-year">OF {{ site.year }}</span></h1>
         <span class="tap-sticker mono strong">TAP A PHOTO</span>
       </div>
     </div>
@@ -89,7 +90,7 @@
   </section>
   {% endif %}
 
-  <footer class="home-footer mono">{{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</footer>
+  <footer class="home-footer mono">{{ site.brand | upper }} · {{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</footer>
 </div>
 
 <script>

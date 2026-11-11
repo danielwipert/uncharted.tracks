@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ song.title }} — {{ song.artist }} · {{ site.title }}{% endblock %}
+{% block title %}{{ song.title }} — {{ song.artist }} · {{ site.brand }} {{ site.title }}{% endblock %}
 {% block head %}
   <meta name="description" content="No. {{ song.rank }}: {{ song.title }} by {{ song.artist }}. {{ song.paragraphs[0] | truncate(150) }}">
   <meta property="og:title" content="No. {{ song.rank }}: {{ song.title }} — {{ song.artist }}">
@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
 <header class="topbar">
-  <a class="wordmark" href="{{ root }}">TOP 50 <span class="tag">’{{ (site.year | string)[-2:] }}</span></a>
+  <a class="wordmark" href="{{ root }}"><span class="wordmark-brand mono">{{ site.brand | upper }}</span><span class="wordmark-issue">TOP {{ total }} <span class="tag">’{{ (site.year | string)[-2:] }}</span></span></a>
   <div class="topbar-right">
     <span class="mono soft">NO. {{ song.rank }} / {{ total }}</span>
     <a class="icon-btn" href="{{ root }}" aria-label="All {{ total }} songs">
@@ -148,7 +148,7 @@
       {% endif %}
       <a class="outline-card center" href="{{ root }}">ALL {{ total }} SONGS</a>
     </div>
-    <span class="mono keep-foot">{{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</span>
+    <span class="mono keep-foot">{{ site.brand | upper }} · {{ site.title | upper }} · A ZINE BY {{ site.author | upper }}</span>
   </div>
 </nav>
 

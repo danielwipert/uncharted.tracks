@@ -13,6 +13,7 @@ site:
   hidden_preview: true
   year: 2026
   list_size: 50
+  brand: "Uncharted Tracks"   # the publication; each year's list is an issue of it
   title: "Top 50 of 2026"
   author: "Dan Wipert"
   editors_note: "[Two or three short lines about this year's list: what it is, how you picked them, and how to use the page.]"

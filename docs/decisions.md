@@ -32,3 +32,4 @@
 | 2026-11-11 | Cover shows only rank, photo and song card; genre tag and headline removed (replaces the 2026-11-08 "headline on the photo" decision) | Cleaner cover; Dan's writing leads | templates/song.html |
 | 2026-11-11 | Essay moves up to where the standfirst was, above the record; standfirst dropped | Writing first, at the top of the right column on desktop | templates/song.html |
 | 2026-11-11 | Keep Reading cards show the artist under each song title | Easier to tell songs apart | templates/song.html |
+| 2026-11-11 | Uncharted Tracks is the publication; the Top 50 is this year's issue. Black "UNCHARTED TRACKS" nameplate above TOP 50 / OF 2026 on the home page; small "UNCHARTED TRACKS" label over "TOP 50 '26" on song pages; brand in every page title and footer | Builds the brand that will own the URL, and carries over to future years | songs.yaml `site.brand`; templates |
