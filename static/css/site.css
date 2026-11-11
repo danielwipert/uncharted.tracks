@@ -137,6 +137,7 @@ a.segue:hover, a.segue:focus-visible { text-decoration: underline; text-decorati
 .next-title, .prev-title { font-family: var(--font-display); text-transform: uppercase; }
 .next-title { font-size: 22px; }
 .prev-title { font-size: 17px; }
+.keep-artist { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .keep-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .outline-card { display: flex; flex-direction: column; justify-content: center; min-height: 56px; padding: 8px 12px; border: 2px solid var(--paper); color: var(--paper); text-decoration: none; }
 .outline-card.center { align-items: center; font-family: var(--font-mono); font-size: 13px; font-weight: 700; }

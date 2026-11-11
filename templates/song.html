@@ -138,13 +138,13 @@
     <span class="mono keep-label">KEEP READING</span>
     {% if song.next %}
     <a class="next-card" href="{{ root }}{{ song.next.url }}">
-      <span><span class="mono small-bold">NEXT UP · NO. {{ song.next.rank }}</span><span class="next-title">{{ song.next.title }}</span></span>
+      <span><span class="mono small-bold">NEXT UP · NO. {{ song.next.rank }}</span><span class="next-title">{{ song.next.title }}</span><span class="mono keep-artist">{{ song.next.artist }}</span></span>
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M4 11h13M12 5l6 6-6 6"/></svg>
     </a>
     {% endif %}
     <div class="keep-grid">
       {% if song.prev %}
-      <a class="outline-card" href="{{ root }}{{ song.prev.url }}"><span class="mono small">← NO. {{ song.prev.rank }}</span><span class="prev-title">{{ song.prev.title }}</span></a>
+      <a class="outline-card" href="{{ root }}{{ song.prev.url }}"><span class="mono small">← NO. {{ song.prev.rank }}</span><span class="prev-title">{{ song.prev.title }}</span><span class="mono keep-artist">{{ song.prev.artist }}</span></a>
       {% endif %}
       <a class="outline-card center" href="{{ root }}">ALL {{ total }} SONGS</a>
     </div>
