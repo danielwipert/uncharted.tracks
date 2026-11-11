@@ -7,7 +7,7 @@
   --ink-soft: #4A453F;
   --ink-muted: #2B2724;
   --on-dark-soft: #C9C1B3;
-  --spot: #FF5A36;          /* red-orange spot color for UI */
+  --spot: #F46F52;          /* red-orange spot color for UI (softened from #FF5A36 on 2026-11-11) */
   --polaroid: #F1E5C0;      /* yellowed polaroid frame */
   --tape: rgba(242, 237, 227, 0.8);
 
@@ -92,7 +92,7 @@ img { display: block; max-width: 100%; }
 .jcard-rows { list-style: none; margin: 0; padding: 0; }
 .jcard-row { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 12px; border-top: 1px dashed #8F877A; text-decoration: none; color: var(--ink); transition: background 0.15s ease; }
 .jcard-rows li:first-child .jcard-row { border-top: none; }
-.jcard-row:hover, .jcard-row:focus-visible { background: rgba(255, 90, 54, 0.12); }
+.jcard-row:hover, .jcard-row:focus-visible { background: rgba(244, 111, 82, 0.12); }
 .jcard-row.is-highlight { background: var(--spot); }
 .jcard-row.is-playing { box-shadow: inset 6px 0 0 var(--ink); }
 .jcard-code { width: 24px; flex-shrink: 0; }

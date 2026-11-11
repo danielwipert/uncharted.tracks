@@ -46,7 +46,7 @@ A website that walks through Dan's top 50 songs of 2026, designed like an indie 
 | Paper (background) | `#F2EDE3` |
 | Ink (text, borders) | `#161412` |
 | Secondary text | `#4A453F` |
-| Spot color (UI: rank stickers, tags, jump buttons, song card, buttons) | `#FF5A36` (red-orange) |
+| Spot color (UI: rank stickers, tags, jump buttons, song card, buttons) | `#F46F52` (red-orange, softened from #FF5A36) |
 | Polaroid frame (yellowed) | `#F1E5C0` |
 
 **Typography (Google Fonts)**

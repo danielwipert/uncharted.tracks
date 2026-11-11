@@ -86,7 +86,7 @@ def bandcamp_embed(track_id):
     if not track_id:
         return ""
     return (f"https://bandcamp.com/EmbeddedPlayer/track={track_id}/size=large/"
-            "bgcol=f2ede3/linkcol=ff5a36/tracklist=false/artwork=small/transparent=true/")
+            "bgcol=f2ede3/linkcol=f46f52/tracklist=false/artwork=small/transparent=true/")
 
 
 def listen_rows(song):
