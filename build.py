@@ -32,7 +32,7 @@ WEAR_TEXTURE = STATIC / "img" / "wear.png"
 # Every song must have these. Anything else (photo, songwriters...) is optional.
 REQUIRED_FIELDS = [
     "rank", "slug", "title", "artist", "hometown", "record_label",
-    "release_month", "headline", "standfirst", "essay",
+    "release_month", "essay",
 ]
 
 
@@ -164,7 +164,7 @@ def report_missing(songs):
             todo.append("listening links")
         elif song.get("bandcamp_url") and not song.get("bandcamp_track_id"):
             todo.append("bandcamp_track_id (so Bandcamp plays on the page)")
-        if "[" in song["headline"] + song["essay"]:
+        if "[" in song["essay"]:
             todo.append("writing")
         if todo:
             print(f"  No. {song['rank']} {song['title']}: still needs {', '.join(todo)}")

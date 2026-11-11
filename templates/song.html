@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}{{ song.title }} — {{ song.artist }} · {{ site.title }}{% endblock %}
 {% block head %}
-  <meta name="description" content="No. {{ song.rank }}: {{ song.title }} by {{ song.artist }}. {{ song.standfirst }}">
+  <meta name="description" content="No. {{ song.rank }}: {{ song.title }} by {{ song.artist }}. {{ song.paragraphs[0] | truncate(150) }}">
   <meta property="og:title" content="No. {{ song.rank }}: {{ song.title }} — {{ song.artist }}">
-  <meta property="og:description" content="{{ song.standfirst }}">
+  <meta property="og:description" content="{{ song.paragraphs[0] | truncate(150) }}">
   {% if song.cover_img %}<meta property="og:image" content="{{ root }}{{ song.cover_img }}">{% endif %}
 {% endblock %}
 {% block content %}
@@ -19,7 +19,7 @@
 
 <div class="song-layout">
 
-  {# ---------- Cover: photo + headline + song card ---------- #}
+  {# ---------- Cover: photo + song card ---------- #}
   <section class="cover-wrap">
     <div class="cover">
       <div class="cover-photo torn">
@@ -29,12 +29,10 @@
         <div class="placeholder-dots" aria-hidden="true"></div>
         {% endif %}
         <div class="cover-text">
-          <span class="kicker">{{ song.genre_scene }}</span>
-          <h1 class="cover-headline"><span>{{ song.headline }}</span></h1>
-          <div class="song-card">
+          <h1 class="song-card">
             <span class="song-card-title">“{{ song.title }}”</span>
             <span class="song-card-artist">{{ song.artist }}</span>
-          </div>
+          </h1>
         </div>
       </div>
       <span class="tape tape-cover" aria-hidden="true"></span>
@@ -45,8 +43,18 @@
 
   {# ---------- Everything you read ---------- #}
   <div class="song-body">
-    <p class="standfirst">{{ song.standfirst }}</p>
     <p class="byline mono">WORDS BY {{ site.author | upper }}</p>
+    <article class="essay">
+      {% for paragraph in song.paragraphs %}
+      <p{% if loop.first %} class="first"{% endif %}>{{ paragraph }}{% if loop.last %} <span class="end-mark" aria-hidden="true"></span>{% endif %}</p>
+      {% if loop.index == 2 and song.pull_quote %}
+      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
+      {% endif %}
+      {% endfor %}
+      {% if song.paragraphs | length < 2 and song.pull_quote %}
+      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
+      {% endif %}
+    </article>
 
     <section class="file-under">
       <svg class="record" width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="Record label: {{ song.record_label }}, from {{ song.hometown }}, released {{ song.release_month }} {{ site.year }}">
@@ -101,18 +109,6 @@
       <div class="player" hidden></div>
     </section>
     {% endif %}
-
-    <article class="essay">
-      {% for paragraph in song.paragraphs %}
-      <p{% if loop.first %} class="first"{% endif %}>{{ paragraph }}{% if loop.last %} <span class="end-mark" aria-hidden="true"></span>{% endif %}</p>
-      {% if loop.index == 2 and song.pull_quote %}
-      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
-      {% endif %}
-      {% endfor %}
-      {% if song.paragraphs | length < 2 and song.pull_quote %}
-      <blockquote class="pull-quote"><p>{{ song.pull_quote }}</p></blockquote>
-      {% endif %}
-    </article>
 
     {% if song.quote or song.segue %}
     <aside class="extras" aria-label="Notes">
