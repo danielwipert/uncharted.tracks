@@ -28,3 +28,7 @@
 | 2026-11-08 | Listening links shown as a cassette insert, Bandcamp first | Most zine-like; puts Bandcamp at the top | spec §5 |
 | 2026-11-08 | Magazine extras (Listen for, File next to, segue) as taped notes | Matches the tape and polaroids on the page | spec §5 |
 | 2026-11-08 | Replace "Listen for" and "File next to" with one "In their own words" artist quote | Too much information on the page; the artist's voice adds more | spec §5 |
+| 2026-11-11 | Songwriters move off the record into the FILE UNDER list | Long credits didn't fit on the record label | templates/song.html |
+| 2026-11-11 | Cover shows only rank, photo and song card; genre tag and headline removed (replaces the 2026-11-08 "headline on the photo" decision) | Cleaner cover; Dan's writing leads | templates/song.html |
+| 2026-11-11 | Essay moves up to where the standfirst was, above the record; standfirst dropped | Writing first, at the top of the right column on desktop | templates/song.html |
+| 2026-11-11 | Keep Reading cards show the artist under each song title | Easier to tell songs apart | templates/song.html |
