@@ -13,3 +13,7 @@ venv/
 # OS clutter
 .DS_Store
 Thumbs.db
+
+# Private keys and Spotify login (never commit these)
+.env
+.spotify_token.json
