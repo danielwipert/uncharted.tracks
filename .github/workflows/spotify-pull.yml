@@ -1,0 +1,60 @@
+# Pulls songs from Spotify into data/master.csv, in the cloud.
+# Run it from GitHub: Actions tab -> "Pull from Spotify" -> Run workflow.
+# Needs repository secrets: SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+# (and later, if needed, SPOTIFY_REFRESH_TOKEN from the one-time phone login).
+
+name: Pull from Spotify
+
+on:
+  workflow_dispatch:
+    inputs:
+      playlists:
+        description: "Playlist links (separate several with commas). Leave blank to list your playlists (needs phone login)."
+        required: false
+        default: ""
+
+permissions:
+  contents: write   # lets the run save data/master.csv back to the repo
+
+concurrency:
+  group: spotify-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: pip install requests
+
+      - name: Pull from Spotify
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          PLAYLISTS: ${{ github.event.inputs.playlists }}
+        run: |
+          if [ -n "$PLAYLISTS" ]; then
+            python tools/pull_spotify.py --playlist "$PLAYLISTS"
+          else
+            python tools/pull_spotify.py --list
+          fi
+
+      - name: Save master.csv to the repo
+        if: always()
+        run: |
+          if [ -f data/master.csv ] && [ -n "$(git status --porcelain data/master.csv)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+            git add data/master.csv
+            git commit -m "Update master.csv from Spotify"
+            git push
+          else
+            echo "No changes to save."
+          fi

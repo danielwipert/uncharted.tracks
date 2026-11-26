@@ -5,16 +5,17 @@ This is step 1 of the track database. Later steps (MusicBrainz, monthly
 listeners) add more columns to the same file. This script never deletes
 those extra columns: it only updates the Spotify columns.
 
-Setup (one time): see docs/track-database.md, "Step 1: Spotify app".
+Normally run in the cloud by GitHub Actions ("Pull from Spotify" workflow).
+See docs/track-database.md for setup.
 
-Use it (from the repo folder, in PowerShell):
-    python tools/pull_spotify.py --list
-        Shows all your playlists with their IDs.
-    python tools/pull_spotify.py --playlist "Top 50 candidates"
-        Pulls one playlist (by name or ID). Repeat --playlist for more.
+How it logs in (first match wins):
+  1. SPOTIFY_REFRESH_TOKEN set  -> your saved Spotify login (reads your playlists)
+  2. SPOTIFY_CLIENT_SECRET set  -> key-only login (no user; may not see playlist songs)
+  3. neither                    -> opens a browser to log in (local use only)
 
-The first run opens your browser to log in to Spotify. After that, the
-login is saved in .spotify_token.json (kept out of git) and reused.
+Examples:
+    python tools/pull_spotify.py --playlist https://open.spotify.com/playlist/37i9...
+    python tools/pull_spotify.py --list        (needs a user login: 1 or 3)
 """
 
 import argparse
@@ -23,6 +24,7 @@ import csv
 import hashlib
 import http.server
 import json
+import re
 import os
 import secrets
 import sys
@@ -169,7 +171,47 @@ def browser_login(client_id):
     return save_token(response.json())
 
 
+def client_auth():
+    """Return (extra form fields, headers) for token requests."""
+    client_id = os.environ["SPOTIFY_CLIENT_ID"]
+    secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
+    if secret:
+        basic = base64.b64encode(f"{client_id}:{secret}".encode()).decode()
+        return {}, {"Authorization": f"Basic {basic}"}
+    return {"client_id": client_id}, {}
+
+
 def get_token(client_id):
+    saved_login = os.environ.get("SPOTIFY_REFRESH_TOKEN")
+    if saved_login:
+        fields, headers = client_auth()
+        response = requests.post("https://accounts.spotify.com/api/token", headers=headers,
+                                 data={"grant_type": "refresh_token", "refresh_token": saved_login, **fields},
+                                 timeout=30)
+        if not response.ok:
+            sys.exit(f"::error::Saved Spotify login was refused ({response.status_code}). "
+                     "Redo the one-time phone login and update the SPOTIFY_REFRESH_TOKEN secret.")
+        token = response.json()
+        new = token.get("refresh_token")
+        if new and new != saved_login:
+            print("::warning::Spotify issued a new saved login. If the next run fails, "
+                  "redo the one-time phone login and update the SPOTIFY_REFRESH_TOKEN secret.")
+        token["mode"] = "user"
+        token["expires_at"] = time.time() + token.get("expires_in", 3600) - 60
+        return token
+
+    if os.environ.get("SPOTIFY_CLIENT_SECRET"):
+        _, headers = client_auth()
+        response = requests.post("https://accounts.spotify.com/api/token", headers=headers,
+                                 data={"grant_type": "client_credentials"}, timeout=30)
+        if not response.ok:
+            sys.exit(f"::error::Spotify refused the Client ID / Client Secret ({response.status_code}). "
+                     "Check both GitHub secrets for typos or extra spaces.")
+        token = response.json()
+        token["mode"] = "key-only"
+        token["expires_at"] = time.time() + token.get("expires_in", 3600) - 60
+        return token
+
     if TOKEN_FILE.exists():
         token = json.loads(TOKEN_FILE.read_text(encoding="utf-8"))
         if time.time() < token.get("expires_at", 0):
@@ -195,6 +237,7 @@ class Spotify:
         self.client_id = client_id
         self.token = get_token(client_id)
         self.cache = {}
+        self.blocked = None
 
     def get(self, url, params=None):
         if not url.startswith("http"):
@@ -214,6 +257,8 @@ class Spotify:
             if response.status_code == 401 and attempt == 0:  # token went stale
                 self.token["expires_at"] = 0
                 continue
+            if response.status_code in (403, 404) and "/playlists/" in url:
+                return {"_blocked": response.status_code}
             response.raise_for_status()
             return response.json()
         sys.exit("Spotify kept refusing requests. Try again in a few minutes.")
@@ -226,6 +271,9 @@ class Spotify:
     def pages(self, path, params=None):
         """Yield every item across all pages of a list endpoint."""
         data = self.get(path, params)
+        if "_blocked" in data:
+            self.blocked = data["_blocked"]
+            return
         while True:
             yield from data.get("items", [])
             if not data.get("next"):
@@ -237,6 +285,14 @@ class Spotify:
 
     def playlist_items(self, playlist_id):
         return self.pages(f"/playlists/{playlist_id}/items", {"limit": 50})
+
+
+def playlist_id_from(text):
+    """Accept a full Spotify link, a spotify:playlist: URI, or a bare ID."""
+    m = re.search(r"playlist[/:]([A-Za-z0-9]{22})", text)
+    if m:
+        return m.group(1)
+    return text.strip() if re.fullmatch(r"[A-Za-z0-9]{22}", text.strip()) else None
 
 
 def find_playlist(playlists, wanted):
@@ -332,34 +388,64 @@ def merge(master, new):
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+def summary(text):
+    """Write to the GitHub Actions run page (no-op when run elsewhere)."""
+    path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if path:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(text + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Pull Spotify playlists into data/master.csv")
     parser.add_argument("--list", action="store_true", help="show your playlists and stop")
-    parser.add_argument("--playlist", action="append", default=[], help="playlist name or ID (repeatable)")
+    parser.add_argument("--playlist", action="append", default=[],
+                        help="playlist link, ID, or name (repeatable; commas also work)")
     args = parser.parse_args()
+    wanted_list = [w.strip() for item in args.playlist for w in item.split(",") if w.strip()]
 
     load_env()
     client_id = os.environ.get("SPOTIFY_CLIENT_ID")
     if not client_id:
-        sys.exit("No SPOTIFY_CLIENT_ID found. Add it to a .env file (see docs/track-database.md).")
+        sys.exit("::error::No SPOTIFY_CLIENT_ID found. Add it as a GitHub secret (see docs/track-database.md).")
 
     sp = Spotify(client_id)
-    playlists = sp.my_playlists()
+    mode = sp.token.get("mode", "user")
+    print(f"Logged in to Spotify ({mode} login).")
+    summary(f"## Pull from Spotify\n\nLogin type: **{mode}**\n")
 
-    if args.list or not args.playlist:
+    playlists = sp.my_playlists() if mode == "user" else []
+
+    if args.list or not wanted_list:
+        if mode != "user":
+            sys.exit("::error::Listing your playlists needs your Spotify login. Paste playlist links instead.")
         print(f"\nYour playlists ({len(playlists)}):\n")
+        summary("| Playlist | Songs | ID |\n|---|---|---|")
         for p in playlists:
             count = (p.get("items") or p.get("tracks") or {}).get("total", "?")
             print(f"  {p['name']:<45} {count:>4} songs   ID: {p['id']}")
-        if not args.playlist:
-            print('\nNext: python tools/pull_spotify.py --playlist "Playlist name"')
+            summary(f"| {p['name']} | {count} | `{p['id']}` |")
         return
 
     master, columns = read_master()
     before = len(master)
-    for wanted in args.playlist:
-        playlist = find_playlist(playlists, wanted)
+    problems = []
+    for wanted in wanted_list:
+        pid = playlist_id_from(wanted)
+        if pid:
+            info = sp.get(f"/playlists/{pid}")
+            if "_blocked" in info:
+                problems.append(f"{wanted}: Spotify refused to open this playlist ({info['_blocked']}).")
+                continue
+            playlist = {"id": pid, "name": info.get("name", pid)}
+        else:
+            if mode != "user":
+                problems.append(f'"{wanted}": names only work with your Spotify login. Paste the playlist link.')
+                continue
+            playlist = find_playlist(playlists, wanted)
+
         print(f'\nPulling "{playlist["name"]}"...')
+        sp.blocked = None
         count = 0
         for entry in sp.playlist_items(playlist["id"]):
             row = song_row(sp, entry, playlist["name"])
@@ -368,10 +454,28 @@ def main():
                 count += 1
                 print(f"  {count:>3}. {row['artist']} - {row['title']}")
         print(f"  Done: {count} songs.")
+        summary(f"- **{playlist['name']}**: {count} songs")
+        if count == 0:
+            reason = f" (Spotify answered {sp.blocked})" if sp.blocked else ""
+            if mode == "key-only":
+                problems.append(f'"{playlist["name"]}": no songs came back with the key-only login{reason}. '
+                                "Spotify now hides playlist songs unless you log in as yourself. "
+                                "Next step: the one-time phone login (see docs/track-database.md).")
+            else:
+                problems.append(f'"{playlist["name"]}": no songs came back{reason}. '
+                                "Spotify only shares songs from playlists you own or collaborate on.")
 
-    write_master(master, columns)
-    print(f"\nSaved {len(master)} songs to {MASTER_CSV.relative_to(REPO)} "
-          f"({len(master) - before} new).")
+    if master:
+        write_master(master, columns)
+    total = f"Saved {len(master)} songs to data/master.csv ({len(master) - before} new)."
+    print("\n" + total)
+    summary("\n" + total)
+
+    for p in problems:
+        print(f"::error::{p}")
+        summary(f"\n> ⚠️ {p}")
+    if problems:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

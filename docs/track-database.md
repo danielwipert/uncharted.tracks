@@ -21,52 +21,39 @@ One master list of every candidate song, filled in by Python so you don't have t
 
 Not available anywhere automatic: followers (dropped), popularity.
 
+Everything runs in the cloud (GitHub Actions). Nothing runs on your computer.
+
 ---
 
-## Step 1: Spotify app (one time, about 5 minutes)
+## Step 1: Add your Spotify keys to GitHub (one time)
 
-You need a Spotify **Premium** account for this.
+You need your Spotify app's **Client ID** and **Client Secret** (developer.spotify.com/dashboard → your app → **Settings**).
 
-1. Go to <https://developer.spotify.com/dashboard> and log in with your Spotify account.
-2. Click **Create app**.
-3. Fill in:
-   - **App name:** `Uncharted Tracks puller`
-   - **App description:** `Reads my playlists for my top 50 list`
-   - **Redirect URI:** `http://127.0.0.1:8888/callback` (type it exactly, then click **Add**)
-   - **Which API/SDKs are you planning to use?** tick **Web API**
-4. Tick the box to agree to Spotify's terms, then click **Save**.
-5. On the app page, click **Settings**. Copy the **Client ID**. (You don't need the Client secret.)
-6. In the repo folder, make a copy of `.env.example` and name it `.env`. Open it and paste the Client ID after `SPOTIFY_CLIENT_ID=`. Save.
+1. Open <https://github.com/danielwipert/uncharted.tracks/settings/secrets/actions> in a browser. (On a phone, use the browser, not the GitHub app, and switch to "Desktop site" if the page looks cut off.)
+2. Click **New repository secret**.
+3. **Name:** `SPOTIFY_CLIENT_ID` · **Secret:** paste your Client ID · click **Add secret**.
+4. Click **New repository secret** again.
+5. **Name:** `SPOTIFY_CLIENT_SECRET` · **Secret:** paste your Client Secret · click **Add secret**.
 
-## Step 1: Run it (PowerShell, in the repo folder)
+Secrets are hidden: nobody (including you) can read them back, and they never show in the run logs.
 
-```powershell
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python tools/pull_spotify.py --list
-```
+## Step 1: Run the test
 
-- The first time, your browser opens and asks you to log in to Spotify and allow the app. Click **Agree**. The tab then says "Spotify login done". Close it.
-- The terminal lists your playlists with their IDs.
+1. Open the **Actions** tab: <https://github.com/danielwipert/uncharted.tracks/actions>
+2. Click **Pull from Spotify** on the left.
+3. Click **Run workflow**. In the box, paste a playlist link (in Spotify: playlist → ⋯ → Share → Copy link). Several links: separate with commas.
+4. Click the green **Run workflow** button. Wait about a minute, then click the run to see the result.
 
-Then pull a playlist (use its name in quotes, or its ID):
+**What the result means**
 
-```powershell
-python tools/pull_spotify.py --playlist "Your playlist name"
-```
-
-Pull several at once by repeating `--playlist`. Songs on more than one playlist appear once, with both playlist names.
-
-The result is `data/master.csv`. Open it in Excel or import it into Google Sheets as the "Master" tab.
+- ✅ Green, with songs listed: the key-only login works. `data/master.csv` is saved to the repo automatically.
+- ❌ Red, "no songs came back with the key-only login": Spotify hides playlist songs without your personal login. Next step is the one-time phone login (step 1b, to be added).
 
 ### If something goes wrong
 
 | Message | What to do |
 | --- | --- |
-| `No SPOTIFY_CLIENT_ID found` | The `.env` file is missing or the ID isn't pasted in. See step 6. |
-| Browser says `INVALID_CLIENT: Invalid redirect URI` | The Redirect URI in your Spotify app doesn't match exactly. It must be `http://127.0.0.1:8888/callback`. |
-| `403 Forbidden` | The Spotify account isn't Premium, or you're not logged in with the account that made the app. |
-| `No playlist called ...` | Check the spelling with `--list`, or use the ID instead. |
-| Songs from a playlist are missing | Spotify only lets the app read playlists you **own** or collaborate on. Copy a followed playlist's songs into one of your own. |
-
-To log in again from scratch, delete `.spotify_token.json` and run the script.
+| `No SPOTIFY_CLIENT_ID found` | The secret is missing or misnamed. Names must match exactly. |
+| `Spotify refused the Client ID / Client Secret` | A typo or extra space in a secret. Delete it and add it again. |
+| `Spotify refused to open this playlist` | The link is wrong, or the playlist is private. |
+| `names only work with your Spotify login` | Paste the playlist link, not its name. |
