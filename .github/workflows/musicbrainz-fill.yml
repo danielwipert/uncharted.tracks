@@ -1,0 +1,56 @@
+# Fills data/master.csv with label, hometown, songwriters and links from MusicBrainz.
+# Run it from GitHub: Actions tab -> "Fill from MusicBrainz" -> Run workflow.
+# No secrets needed (MusicBrainz is free and open).
+
+name: Fill from MusicBrainz
+
+on:
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: "Re-check songs that were already checked"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # lets the run save data/master.csv back to the repo
+
+concurrency:
+  group: master-csv   # never run at the same time as another master.csv update
+  cancel-in-progress: false
+
+jobs:
+  fill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: pip install requests
+
+      - name: Fill from MusicBrainz
+        run: |
+          if [ "${{ github.event.inputs.refresh }}" = "true" ]; then
+            python tools/fill_musicbrainz.py --refresh
+          else
+            python tools/fill_musicbrainz.py
+          fi
+
+      - name: Save master.csv to the repo
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain data/master.csv)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+            git add data/master.csv
+            git commit -m "Update master.csv from MusicBrainz"
+            git pull --rebase
+            git push
+          else
+            echo "No changes to save."
+          fi

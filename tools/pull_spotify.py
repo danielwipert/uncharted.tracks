@@ -254,6 +254,11 @@ class Spotify:
                 print(f"  Spotify asked us to slow down; waiting {wait}s...")
                 time.sleep(wait)
                 continue
+            if response.status_code in (500, 502, 503, 504):  # Spotify hiccup: wait and retry
+                wait = 2 ** (attempt + 1)
+                print(f"  Spotify had a temporary error ({response.status_code}); retrying in {wait}s...")
+                time.sleep(wait)
+                continue
             if response.status_code == 401 and attempt == 0:  # token went stale
                 self.token["expires_at"] = 0
                 continue

@@ -17,7 +17,7 @@ permissions:
   contents: write   # lets the run save data/master.csv back to the repo
 
 concurrency:
-  group: spotify-pull
+  group: master-csv
   cancel-in-progress: false
 
 jobs:

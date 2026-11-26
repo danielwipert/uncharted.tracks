@@ -15,7 +15,7 @@ One master list of every candidate song, filled in by Python so you don't have t
 ## Where each field comes from
 
 1. **Spotify API** (step 1, built): title, artist, featured artists, genres, album, album type, release date and month, duration, explicit, ISRC, UPC, Spotify links, cover image, which playlists, date added.
-2. **MusicBrainz** (step 2, next): record label, songwriters, hometown, year formed, Bandcamp and other links.
+2. **MusicBrainz** (step 2, built): record label, songwriters, hometown, year formed, Bandcamp and other links.
 3. **Spotify public artist page** (step 3): monthly listeners.
 4. **Research agents** (step 4): whatever is still blank.
 
@@ -57,3 +57,23 @@ Secrets are hidden: nobody (including you) can read them back, and they never sh
 | `Spotify refused the Client ID / Client Secret` | A typo or extra space in a secret. Delete it and add it again. |
 | `Spotify refused to open this playlist` | The link is wrong, or the playlist is private. |
 | `names only work with your Spotify login` | Paste the playlist link, not its name. |
+
+---
+
+## Step 2: Fill from MusicBrainz
+
+No setup or secrets needed. MusicBrainz is free.
+
+1. Open the **Actions** tab → **Fill from MusicBrainz** → **Run workflow** → green **Run workflow**.
+2. It takes about 5 seconds per song (MusicBrainz allows one request per second), so roughly 7 minutes for 80 songs.
+3. The run page shows how many songs were found and how many got a label, hometown, songwriters, year formed and Bandcamp link.
+
+It only checks songs it hasn't checked before, so after pulling new songs from Spotify, run it again and it does just the new ones. Tick **Re-check songs that were already checked** to redo everything (for example, a few months later, when volunteers have added more).
+
+**What `mb_match` means**
+
+| Value | Meaning |
+| --- | --- |
+| `isrc` | Song found: label, songwriters, producers and artist details filled where MusicBrainz has them |
+| `spotify-artist-link` | Song not in MusicBrainz, but the artist is: hometown, formed, links only |
+| `not found` | Nothing in MusicBrainz yet. These go to the research agents (step 4). |
