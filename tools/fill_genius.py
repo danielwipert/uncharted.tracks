@@ -37,6 +37,8 @@ API = "https://api.genius.com"
 GENIUS_COLUMNS = [
     "genius_match",          # found / not found
     "genius_url",
+    "genius_title",          # the song title Genius matched, to spot wrong matches
+    "genius_artist",
     "genius_songwriters",
     "genius_producers",
     "genius_label",          # from Genius's credits, when listed
@@ -119,7 +121,7 @@ class Genius:
         return None
 
     def find_song(self, title, artist):
-        """Search Genius and return the best matching song id, or None."""
+        """Search Genius and return the best matching search result, or None."""
         best, best_score = None, 0.0
         for query in (f"{simplify(title)} {simplify(artist)}", simplify(title)):
             found = self.get("/search", q=query) or {}
@@ -132,7 +134,7 @@ class Genius:
                 title_score = similar(song.get("title"), title)
                 score = (artist_score + title_score) / 2
                 if artist_score >= 0.85 and title_score >= 0.8 and score > best_score:
-                    best, best_score = song.get("id"), score
+                    best, best_score = song, score
             if best:
                 return best
         return None
@@ -149,7 +151,8 @@ def trim(text, limit=1200):
     return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
 
 
-def song_details(genius, song_id):
+def song_details(genius, hit):
+    song_id = hit["id"]
     data = genius.get(f"/songs/{song_id}") or {}
     song = data.get("song") or {}
     if not song:
@@ -179,6 +182,8 @@ def song_details(genius, song_id):
         "genius_match": "found",
         "genius_song_id": song_id,
         "genius_url": song.get("url", ""),
+        "genius_title": song.get("title") or hit.get("title", ""),
+        "genius_artist": song.get("artist_names") or (hit.get("primary_artist") or {}).get("name", ""),
         "genius_songwriters": names(song.get("writer_artists")),
         "genius_producers": names(song.get("producer_artists")),
         "genius_label": "; ".join(label),
@@ -244,8 +249,8 @@ def main():
     found = 0
 
     for i, row in enumerate(todo, 1):
-        song_id = genius.find_song(row["title"], row["artist"])
-        details = song_details(genius, song_id) if song_id else None
+        hit = genius.find_song(row["title"], row["artist"])
+        details = song_details(genius, hit) if hit else None
         details = details or {"genius_match": "not found"}
         for c in GENIUS_COLUMNS:
             row[c] = details.get(c, "")

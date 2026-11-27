@@ -1,0 +1,47 @@
+# Reads each artist's monthly listeners from their public Spotify page into data/master.csv.
+# Refreshes every artist on every run (the numbers change).
+# Run it from GitHub: Actions tab -> "Fill monthly listeners" -> Run workflow.
+# No secrets needed.
+
+name: Fill monthly listeners
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # lets the run save data/master.csv back to the repo
+
+concurrency:
+  group: master-csv   # never run at the same time as another master.csv update
+  cancel-in-progress: false
+
+jobs:
+  fill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: pip install requests
+
+      - name: Fill monthly listeners
+        run: python tools/fill_listeners.py
+
+      - name: Save master.csv to the repo
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain data/master.csv)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+            git add data/master.csv
+            git commit -m "Update monthly listeners"
+            git pull --rebase
+            git push
+          else
+            echo "No changes to save."
+          fi

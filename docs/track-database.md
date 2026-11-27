@@ -17,7 +17,7 @@ One master list of every candidate song, filled in by Python so you don't have t
 1. **Spotify API** (step 1, built): title, artist, featured artists, genres, album, album type, release date and month, duration, explicit, ISRC, UPC, Spotify links, cover image, which playlists, date added.
 2. **MusicBrainz** (step 2, built): record label, songwriters, hometown, year formed, Bandcamp and other links.
    **Genius** (step 2b, built): songwriters, producers, credits, studio, Apple Music and YouTube links.
-3. **Spotify public artist page** (step 3): monthly listeners.
+3. **Spotify public artist page** (step 3, built): monthly listeners.
 4. **Research agents** (step 4): whatever is still blank.
 
 Not available anywhere automatic: followers (dropped), popularity.
@@ -99,3 +99,21 @@ Run it the same way: **Actions** → **Fill from Genius** → **Run workflow**. 
 | `genius_instagram`, `genius_twitter` | Artist socials |
 
 A song only counts as found when both the artist and the title match closely, so a different song with the same name is skipped rather than filled in wrong. Lyrics are not collected.
+
+---
+
+## Step 3: Fill monthly listeners
+
+No setup or secrets needed. **Actions** → **Fill monthly listeners** → **Run workflow**. About a minute or two.
+
+It reads each artist's public Spotify page once (not once per song) and saves:
+
+| Column | What it is |
+| --- | --- |
+| `monthly_listeners` | The number, e.g. `12300`, so you can sort by it |
+| `monthly_listeners_text` | Exactly what Spotify showed, e.g. `12.3K monthly listeners` |
+| `listeners_checked_at` | The date it was read |
+
+Spotify rounds big artists (47.1M) and shows small ones exactly. The numbers change daily, so every run refreshes every artist. If a page can't be read, the last good number is kept.
+
+Note: Spotify's terms don't allow automated collection from its website. Accepted as a low-volume pull (about 70 pages, a few times a year).
