@@ -1,0 +1,58 @@
+# Fills data/master.csv with songwriters, producers, credits, Apple Music and YouTube links from Genius.
+# Run it from GitHub: Actions tab -> "Fill from Genius" -> Run workflow.
+# Needs the GENIUS_ACCESS_TOKEN repository secret.
+
+name: Fill from Genius
+
+on:
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: "Re-check songs that were already checked"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # lets the run save data/master.csv back to the repo
+
+concurrency:
+  group: master-csv   # never run at the same time as another master.csv update
+  cancel-in-progress: false
+
+jobs:
+  fill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: pip install requests
+
+      - name: Fill from Genius
+        env:
+          GENIUS_ACCESS_TOKEN: ${{ secrets.GENIUS_ACCESS_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.refresh }}" = "true" ]; then
+            python tools/fill_genius.py --refresh
+          else
+            python tools/fill_genius.py
+          fi
+
+      - name: Save master.csv to the repo
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain data/master.csv)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+            git add data/master.csv
+            git commit -m "Update master.csv from Genius"
+            git pull --rebase
+            git push
+          else
+            echo "No changes to save."
+          fi

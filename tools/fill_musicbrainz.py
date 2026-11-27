@@ -100,6 +100,12 @@ def join(items):
     return "; ".join(dict.fromkeys(i for i in items if i))
 
 
+def clean_label(text):
+    """MusicBrainz writes '[no label]' for self-released music."""
+    return "; ".join("Self-released" if p.strip() == "[no label]" else p.strip()
+                     for p in (text or "").split(";") if p.strip())
+
+
 def rel_names(relations, types, target="artist"):
     return [r[target]["name"] for r in relations or []
             if r.get("type") in types and r.get(target)]
@@ -190,7 +196,7 @@ def by_isrc(mb, row):
     if release:
         full = mb.get(f"/release/{release['id']}", inc="labels") or {}
         label_info = full.get("label-info") or []
-        out["mb_label"] = join((li.get("label") or {}).get("name") for li in label_info)
+        out["mb_label"] = clean_label(join((li.get("label") or {}).get("name") for li in label_info))
         out["mb_catalog_number"] = join(li.get("catalog-number") for li in label_info
                                         if li.get("catalog-number") not in (None, "[none]"))
         out["mb_release_country"] = full.get("country") or release.get("country") or ""
@@ -215,6 +221,13 @@ def by_spotify_link(mb, row):
     return out
 
 
+def save(rows, columns):
+    with MASTER_CSV.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def summary(text):
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if path:
@@ -235,6 +248,10 @@ def main():
         columns = list(reader.fieldnames or [])
     columns += [c for c in MB_COLUMNS if c not in columns]
 
+    for r in rows:  # tidy labels saved by earlier runs too
+        if r.get("mb_label"):
+            r["mb_label"] = clean_label(r["mb_label"])
+
     mb = MusicBrainz()
     todo = [r for r in rows if args.refresh or not r.get("mb_checked_at")]
     print(f"Checking {len(todo)} of {len(rows)} songs on MusicBrainz (about {len(todo) * 5} seconds)...\n")
@@ -250,11 +267,9 @@ def main():
         print(f"  {i:>3}. {row['artist']} - {row['title']}: {row['mb_match']}"
               + (f" ({' | '.join(bits)})" if bits else ""))
 
-        if i % 10 == 0 or i == len(todo):  # save as we go, so a stopped run keeps its work
-            with MASTER_CSV.open("w", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
-                writer.writeheader()
-                writer.writerows(rows)
+        if i % 10 == 0:  # save as we go, so a stopped run keeps its work
+            save(rows, columns)
+    save(rows, columns)
 
     filled = {c: sum(1 for r in rows if r.get(c)) for c in
               ("mb_label", "mb_hometown", "mb_songwriters", "mb_formed", "mb_bandcamp_url")}
