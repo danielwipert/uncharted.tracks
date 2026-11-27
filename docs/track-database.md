@@ -18,7 +18,7 @@ One master list of every candidate song, filled in by Python so you don't have t
 2. **MusicBrainz** (step 2, built): record label, songwriters, hometown, year formed, Bandcamp and other links.
    **Genius** (step 2b, built): songwriters, producers, credits, studio, Apple Music and YouTube links.
 3. **Spotify public artist page** (step 3, built): monthly listeners.
-4. **Research agents** (step 4): whatever is still blank.
+4. **Research agents** (step 4, done Nov 2026): whatever is still blank, saved with sources in `data/research.csv`.
 
 Not available anywhere automatic: followers (dropped), popularity.
 
@@ -117,3 +117,24 @@ It reads each artist's public Spotify page once (not once per song) and saves:
 Spotify rounds big artists (47.1M) and shows small ones exactly. The numbers change daily, so every run refreshes every artist. If a page can't be read, the last good number is kept.
 
 Note: Spotify's terms don't allow automated collection from its website. Accepted as a low-volume pull (about 70 pages, a few times a year).
+
+---
+
+## Step 4: Research agents
+
+For whatever is still blank after steps 1–3, research agents look up the song's hometown, record label, songwriters, and Bandcamp / Apple Music / YouTube links on Bandcamp, label sites, Apple Music, press and interviews.
+
+Their findings go in **`data/research.csv`**, not the master file (the master stays machine-only). One row per finding:
+
+| Column | What it is |
+| --- | --- |
+| `spotify_track_id`, `artist`, `title` | Which song |
+| `field` | hometown / record_label / songwriters / bandcamp_url / apple_music_url / youtube_url |
+| `value` | What they found |
+| `source` | The link where they found it |
+| `confidence` | high (artist, label, Bandcamp, Apple Music) or medium (press, databases) |
+| `notes` | Short doubts or context |
+
+Things that need a human look are listed in [research-review.md](research-review.md).
+
+When the site is built, a value is chosen in this order: your working sheet → research → MusicBrainz / Genius.
